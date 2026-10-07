@@ -1,0 +1,1273 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hive 方塊鏈</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;700;800&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: arcade cabinet in three rails. Left = hold + wallet, center = the chain (board), right = protocol state, RC and the block feed.
+   On phones the rails shrink to slim columns beside the board and touch controls sit underneath. Single dark look on purpose. */
+:root {
+  --bg: #170a10;
+  --bg-deep: #10060b;
+  --panel: #231420;
+  --line: #3e2532;
+  --fg: #f6ecef;
+  --muted: #b39aa4;
+  --hive: #e31337;
+  --honey: #f5a524;
+  --hbd: #2ec4b6;
+  --good: #7bd389;
+  --bad: #ff5d73;
+  --f-display: "Oxanium", "Noto Sans TC", system-ui, sans-serif;
+  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 50% -10%, rgba(227, 19, 55, 0.22), transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='98'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0 0v32' fill='none' stroke='%23e31337' stroke-opacity='0.07' stroke-width='1.2'/%3E%3C/svg%3E");
+  color: var(--fg);
+  font-family: var(--f-body);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+button { font: inherit; color: inherit; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--honey); outline-offset: 2px; }
+
+.app {
+  display: grid;
+  grid-template-columns: minmax(0, 210px) auto minmax(0, 250px);
+  gap: 20px;
+  justify-content: center;
+  align-items: start;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-block: 22px;
+  padding-inline: 16px;
+}
+.panel { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.box {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  min-width: 0;
+}
+.box h3 {
+  margin: 0 0 10px;
+  font: 600 11px/1.2 var(--f-display);
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+.box h3 .cost { font-family: var(--f-mono); letter-spacing: 0; color: var(--honey); font-size: 10px; }
+kbd {
+  font: 600 10px/1 var(--f-mono);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 2px 5px;
+  color: var(--fg);
+  background: var(--bg-deep);
+}
+
+/* brand */
+.brand { display: flex; align-items: center; gap: 10px; padding: 2px 2px 6px; }
+.hexmark {
+  width: 34px; aspect-ratio: 1 / 1.1547; flex: none;
+  background: var(--hive);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  position: relative;
+}
+.hexmark::after {
+  content: ""; position: absolute; inset: 26% 30% 26% 22%;
+  background: var(--bg);
+  clip-path: polygon(40% 0, 100% 50%, 40% 100%, 0 100%, 60% 50%, 0 0);
+}
+.brand b { display: block; font: 800 22px/1 var(--f-display); letter-spacing: 0.08em; }
+.brand small { display: block; font: 500 12px/1.3 var(--f-body); color: var(--muted); letter-spacing: 0.3em; }
+
+/* wallet stats */
+.wallet { display: grid; gap: 10px; }
+.stat label { display: block; font-size: 11px; color: var(--muted); letter-spacing: 0.06em; }
+.stat .num {
+  font: 700 18px/1.2 var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.stat .num small { font: 500 10px var(--f-display); color: var(--muted); margin-left: 4px; letter-spacing: 0.08em; }
+.stat.big .num { font-size: 24px; color: var(--fg); }
+.stat.big .num small { color: var(--hive); }
+.stat.hbd .num small { color: var(--hbd); }
+.stat .sub { font-size: 11px; color: var(--muted); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.help ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 12px; color: var(--muted); }
+.help li { display: flex; justify-content: space-between; gap: 8px; }
+.help li span:last-child { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* board */
+.center { display: flex; flex-direction: column; align-items: center; }
+.board-wrap {
+  position: relative;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  box-shadow: 0 0 0 5px var(--bg-deep), 0 0 0 6px var(--line), 0 20px 60px rgba(227, 19, 55, 0.18);
+  overflow: hidden;
+  line-height: 0;
+}
+#board { display: block; touch-action: none; }
+.banner {
+  position: absolute; left: 50%; top: 28%;
+  transform: translate(-50%, -8px) scale(0.96);
+  width: max-content; max-width: 88%;
+  background: rgba(16, 6, 11, 0.94);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 16px 11px;
+  text-align: center;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s, transform 0.18s;
+}
+.banner.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.banner b { display: block; font: 800 18px/1.25 var(--f-display); letter-spacing: 0.04em; }
+.banner span { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.banner.good { border-color: var(--good); } .banner.good b { color: var(--good); }
+.banner.bad { border-color: var(--bad); } .banner.bad b { color: var(--bad); }
+.banner.fork { border-color: var(--honey); } .banner.fork b { color: var(--honey); }
+.banner.info { border-color: var(--hbd); } .banner.info b { color: var(--hbd); }
+.freeze {
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  font: 700 12px/1 var(--f-mono); color: var(--hbd);
+  background: rgba(16, 6, 11, 0.85); border: 1px solid var(--hbd); border-radius: 99px;
+  padding: 5px 10px; white-space: nowrap;
+}
+
+/* chain state */
+.chain .hf { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.chain .hf label { font-size: 11px; color: var(--muted); }
+.chain .hf b { font: 800 26px/1 var(--f-display); color: var(--honey); letter-spacing: 0.04em; }
+.era { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: var(--bg-deep); border: 1px dashed var(--line); }
+.era b { display: block; font-size: 13px; }
+.era span { display: block; font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+.era.alert b { color: var(--bad); }
+.blk { margin-top: 10px; font: 500 11px/1.3 var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.blk b { color: var(--fg); font-weight: 700; }
+.bar { display: block; height: 4px; border-radius: 4px; background: var(--bg-deep); margin-top: 5px; overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--hive); }
+
+.rc-meter { height: 12px; border-radius: 6px; background: var(--bg-deep); border: 1px solid var(--line); overflow: hidden; }
+.rc-meter > i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--honey), #ffd27a); transition: width 0.1s linear; }
+.rc-meter.low > i { background: var(--bad); }
+.rc-line { display: flex; justify-content: space-between; margin-top: 6px; font: 500 11px var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.skill {
+  margin-top: 10px; width: 100%;
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  background: transparent; border: 1px solid var(--honey); color: var(--honey);
+  border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: 13px; font-weight: 700;
+}
+.skill:hover { background: rgba(245, 165, 36, 0.1); }
+.skill[disabled] { opacity: 0.4; cursor: not-allowed; }
+.skill small { font: 500 10px var(--f-mono); }
+
+.feed ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.feed li { font-size: 12px; line-height: 1.45; color: var(--fg); border-top: 1px solid var(--line); padding-top: 7px; min-width: 0; overflow-wrap: anywhere; }
+.feed li:first-child { border-top: 0; padding-top: 0; }
+.feed li .h { display: block; font: 500 10px var(--f-mono); color: var(--muted); }
+.feed li.good .h::after { content: " 好消息"; color: var(--good); }
+.feed li.bad .h::after { content: " 壞消息"; color: var(--bad); }
+.feed li.fork .h::after { content: " 硬分叉"; color: var(--honey); }
+.feed .empty { color: var(--muted); }
+
+.mini-actions { display: flex; gap: 8px; }
+.ghost-btn {
+  flex: 1; background: transparent; border: 1px solid var(--line); color: var(--muted);
+  border-radius: 8px; padding: 7px 8px; cursor: pointer; font-size: 12px;
+}
+.ghost-btn:hover { color: var(--fg); border-color: var(--muted); }
+
+/* touch controls */
+.touch {
+  display: none;
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: 100%; max-width: 480px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.touch button {
+  height: 54px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--panel); color: var(--fg);
+  font: 700 15px/1.1 var(--f-display);
+  touch-action: none; user-select: none; -webkit-user-select: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+.touch button small { font: 500 10px var(--f-body); color: var(--muted); }
+.touch button:active { background: var(--line); }
+.touch .t-drop { background: var(--hive); border-color: var(--hive); }
+.touch .t-drop small { color: rgba(255, 255, 255, 0.8); }
+.touch .t-bee { color: var(--honey); }
+.touch .t-small { grid-column: span 2; height: 40px; flex-direction: row; gap: 6px; }
+
+/* overlay sheets */
+.overlay {
+  position: fixed; inset: 0; z-index: 20;
+  background: rgba(14, 5, 9, 0.72);
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px; overflow: auto;
+}
+.sheet {
+  width: 100%; max-width: 560px; max-height: 100%; overflow: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+  padding: 26px 24px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+.logo { display: flex; align-items: center; gap: 14px; }
+.logo .hexmark { width: 52px; }
+.sheet h1 { margin: 0; font: 800 40px/1 var(--f-display); letter-spacing: 0.06em; text-wrap: balance; }
+.sheet h1 em { font-style: normal; font-family: var(--f-body); font-weight: 700; font-size: 30px; color: var(--hive); letter-spacing: 0.12em; margin-left: 4px; }
+.sheet h2 { margin: 0 0 6px; font: 800 28px/1.15 var(--f-display); text-wrap: balance; }
+.lead { color: var(--muted); margin: 12px 0 16px; max-width: 46ch; }
+.rules { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+.rules li { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: start; font-size: 12.5px; color: var(--muted); line-height: 1.45; min-width: 0; }
+.rules li b { display: block; color: var(--fg); font-size: 13px; }
+.rules canvas, .rules .ico { width: 26px; height: 26px; display: block; }
+.ico.fork { background: var(--honey); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+.ico.rc { border-radius: 4px; border: 1px solid var(--line); background: linear-gradient(90deg, var(--honey) 62%, var(--bg-deep) 62%); height: 12px !important; margin-top: 7px; }
+.keys { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+.keys span { display: inline-flex; gap: 4px; align-items: center; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.primary {
+  background: var(--hive); color: #fff; border: 0; border-radius: 10px;
+  padding: 13px 26px; font: 700 16px/1 var(--f-display); letter-spacing: 0.06em; cursor: pointer;
+}
+.primary:hover { filter: brightness(1.1); }
+.secondary { background: transparent; border: 1px solid var(--line); color: var(--fg); border-radius: 10px; padding: 12px 20px; cursor: pointer; font-weight: 700; }
+.best { color: var(--muted); font-size: 12px; margin: 0; }
+.best b { font-family: var(--f-mono); color: var(--honey); }
+.result { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 18px; }
+.result div { background: var(--bg-deep); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+.result dt { font-size: 11px; color: var(--muted); }
+.result dd { margin: 2px 0 0; font: 700 18px/1.2 var(--f-mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.result .total { grid-column: 1 / -1; border-color: var(--hive); }
+.result .total dd { font-size: 26px; color: var(--fg); }
+.record { color: var(--honey); font-weight: 700; margin: 0 0 14px; }
+
+@media (max-width: 760px) {
+  .app { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; padding-block: 10px; }
+  .m-hide { display: none !important; }
+  .box { padding: 8px; border-radius: 8px; }
+  .box h3 { font-size: 10px; margin-bottom: 6px; letter-spacing: 0.06em; }
+  .box h3 .cost, .box h3 kbd { display: none; }
+  .panel { gap: 8px; }
+  .stat.big .num { font-size: 14px; }
+  .stat .num { font-size: 13px; }
+  .stat .num small { display: block; margin: 0; }
+  .row2 { grid-template-columns: 1fr; gap: 8px; }
+  .chain .hf { flex-direction: column; gap: 2px; }
+  .chain .hf b { font-size: 18px; }
+  .era { padding: 6px; margin-top: 6px; }
+  .era b { font-size: 11.5px; }
+  .era span { display: none; }
+  .skill { padding: 6px; font-size: 11px; flex-direction: column; gap: 0; margin-top: 8px; }
+  .rules { grid-template-columns: 1fr; }
+  .sheet { padding: 20px 18px; }
+  .sheet h1 { font-size: 32px; }
+  .sheet h1 em { font-size: 24px; }
+  .touch { display: grid; }
+}
+@media (pointer: coarse) { .touch { display: grid; } }
+@media (prefers-reduced-motion: reduce) {
+  .banner, .rc-meter > i { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="panel left">
+    <div class="brand m-hide"><span class="hexmark" aria-hidden="true"></span><div><b>HIVE</b><small>方塊鏈</small></div></div>
+    <section class="box">
+      <h3>保留 <span class="cost">20 RC</span></h3>
+      <canvas id="hold" aria-label="保留的方塊"></canvas>
+    </section>
+    <section class="box wallet">
+      <div class="stat big"><label>錢包</label><div class="num"><span id="hive">0.000</span><small>HIVE</small></div></div>
+      <div class="stat hbd"><label>HBD 儲蓄</label><div class="num"><span id="hbd">0.000</span><small>HBD</small></div><div class="sub m-hide" id="interest">每 20 個區塊派息 5%</div></div>
+      <div class="row2">
+        <div class="stat"><label>清除列數</label><div class="num" id="lines">0</div></div>
+        <div class="stat"><label>策展連擊</label><div class="num" id="combo">0</div></div>
+      </div>
+    </section>
+    <section class="box help m-hide">
+      <h3>操作</h3>
+      <ul>
+        <li><span>移動</span><span><kbd>←</kbd><kbd>→</kbd></span></li>
+        <li><span>旋轉</span><span><kbd>↑</kbd><kbd>X</kbd><kbd>Z</kbd></span></li>
+        <li><span>軟降 / 硬降</span><span><kbd>↓</kbd><kbd>空白</kbd></span></li>
+        <li><span>保留</span><span><kbd>C</kbd></span></li>
+        <li><span>召喚工蜂</span><span><kbd>B</kbd></span></li>
+        <li><span>暫停 / 靜音</span><span><kbd>P</kbd><kbd>M</kbd></span></li>
+      </ul>
+    </section>
+  </aside>
+
+  <main class="center">
+    <div class="board-wrap">
+      <canvas id="board" aria-label="遊戲盤面"></canvas>
+      <div class="banner" id="banner" role="status" aria-live="polite"></div>
+      <div class="freeze" id="freeze" hidden></div>
+    </div>
+  </main>
+
+  <aside class="panel right">
+    <section class="box chain">
+      <div class="hf"><label>協議版本</label><b id="hf">HF24</b></div>
+      <div class="era" id="era"><b id="era-name">標準共識</b><span id="era-desc">一切照常運作</span></div>
+      <div class="blk m-hide">區塊 <b id="height">#0</b><span class="bar"><i id="blockbar"></i></span></div>
+    </section>
+    <section class="box">
+      <h3>下一批交易</h3>
+      <canvas id="next" aria-label="接下來的方塊"></canvas>
+    </section>
+    <section class="box">
+      <h3>資源點數 RC</h3>
+      <div class="rc-meter" id="rcmeter"><i id="rcbar"></i></div>
+      <div class="rc-line m-hide"><span id="rcval">100 / 100</span><span id="rcrate">+4/秒</span></div>
+      <button class="skill" id="beeBtn" type="button"><span>召喚工蜂</span><small>B · 60 RC</small></button>
+    </section>
+    <section class="box feed m-hide">
+      <h3>鏈上動態</h3>
+      <ol id="feed"><li class="empty">開始遊戲後，鏈上事件會出現在這裡。</li></ol>
+    </section>
+    <div class="mini-actions m-hide">
+      <button class="ghost-btn" id="pauseBtn" type="button">暫停</button>
+      <button class="ghost-btn" id="muteBtn" type="button">音效：開</button>
+    </div>
+  </aside>
+
+  <div class="touch" id="touch">
+    <button type="button" data-act="hold">保留<small>20 RC</small></button>
+    <button type="button" data-act="rotateL">↺<small>逆轉</small></button>
+    <button type="button" data-act="rotate">↻<small>旋轉</small></button>
+    <button type="button" data-act="bee" class="t-bee">工蜂<small>60 RC</small></button>
+    <button type="button" data-act="left">◀<small>左</small></button>
+    <button type="button" data-act="down">▼<small>軟降</small></button>
+    <button type="button" data-act="right">▶<small>右</small></button>
+    <button type="button" data-act="drop" class="t-drop">⤓<small>硬降</small></button>
+    <button type="button" data-act="pause" class="t-small">Ⅱ<small>暫停</small></button>
+    <button type="button" data-act="mute" class="t-small">♪<small>音效開關</small></button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- constants ---------- */
+const COLS = 10, ROWS = 20;
+const DAS = 160, ARR = 45, LOCK_MS = 500, CLEAR_MS = 280, BLOCK_MS = 3000, INTEREST_BLOCKS = 20;
+const RC_MAX = 100, HOLD_COST = 20, BEE_COST = 60;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const PIECES = {
+  I: { name: '見證人',  color: '#e31337', m: [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]] },
+  O: { name: 'HBD 金庫', color: '#2ec4b6', m: [[1,1],[1,1]] },
+  T: { name: 'DHF 提案', color: '#a46bff', m: [[0,1,0],[1,1,1],[0,0,0]] },
+  S: { name: '策展',    color: '#7bd389', m: [[0,1,1],[1,1,0],[0,0,0]] },
+  Z: { name: '轉帳',    color: '#ff7a59', m: [[1,1,0],[0,1,1],[0,0,0]] },
+  J: { name: '質押',    color: '#4d8dff', m: [[1,0,0],[1,1,1],[0,0,0]] },
+  L: { name: '委託',    color: '#f5a524', m: [[0,0,1],[1,1,1],[0,0,0]] },
+  B: { name: '工蜂',    color: '#ffc93c', m: [[1]], special: 'bee' },
+  F: { name: '旗標炸彈', color: '#5b4750', m: [[1]], special: 'flag' },
+};
+const GARBAGE = '#4a3942';
+const colorOf = t => (PIECES[t] ? PIECES[t].color : GARBAGE);
+
+const ERAS = [
+  { id: 'std',    name: '標準共識', desc: '一切照常運作。' },
+  { id: 'bee',    name: '蜂群時代', desc: '每 7 個方塊就會送來一隻工蜂。' },
+  { id: 'rc',     name: 'RC 緊縮',  desc: '資源點數回復速度減半。' },
+  { id: 'air',    name: '空投季',   desc: 'HIVE 代幣出現機率變成三倍。' },
+  { id: 'mirror', name: '鏡像分叉', desc: '左右操作顛倒，直到下一次硬分叉。' },
+  { id: 'whale',  name: '鯨魚出沒', desc: '鏈上事件更頻繁，鯨魚投票機率提高。' },
+  { id: 'rate',   name: 'HBD 升息', desc: 'HBD 儲蓄利息加倍。' },
+  { id: 'fast',   name: '區塊加速', desc: '下落速度額外提升兩級。' },
+];
+const ACCTS = ['@honey.whale', '@orca.curator', '@hexa.witness', '@bee.keeper', '@drone.queen', '@comb.builder', '@nectar.dao', '@pollen.node'];
+const SPAMMERS = ['@spam.farm', '@bot.army', '@free.airdrop.xyz', '@moon.4u'];
+
+/* ---------- dom ---------- */
+const $ = s => document.querySelector(s);
+const boardCv = $('#board'), bctx = boardCv.getContext('2d');
+const holdCv = $('#hold'), hctx = holdCv.getContext('2d');
+const nextCv = $('#next'), nctx = nextCv.getContext('2d');
+const el = {
+  hive: $('#hive'), hbd: $('#hbd'), lines: $('#lines'), combo: $('#combo'), hf: $('#hf'),
+  era: $('#era'), eraName: $('#era-name'), eraDesc: $('#era-desc'), height: $('#height'), blockbar: $('#blockbar'),
+  rcbar: $('#rcbar'), rcmeter: $('#rcmeter'), rcval: $('#rcval'), rcrate: $('#rcrate'), interest: $('#interest'),
+  beeBtn: $('#beeBtn'), feed: $('#feed'), banner: $('#banner'), freeze: $('#freeze'),
+  overlay: $('#overlay'), sheet: $('#sheet'), muteBtn: $('#muteBtn'), pauseBtn: $('#pauseBtn'),
+};
+
+/* ---------- helpers ---------- */
+const rint = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const clone = m => m.map(r => r.slice());
+const emptyRow = () => Array(COLS).fill(null);
+const newBoard = () => Array.from({ length: ROWS }, emptyRow);
+const fmt3 = milli => (milli / 1000).toFixed(3);
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } },
+};
+function rotateM(m, dir) {
+  const n = m.length, r = Array.from({ length: n }, () => Array(n).fill(0));
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    if (dir > 0) r[x][n - 1 - y] = m[y][x]; else r[n - 1 - x][y] = m[y][x];
+  }
+  return r;
+}
+function topRow(m) { for (let y = 0; y < m.length; y++) if (m[y].some(v => v)) return y; return 0; }
+
+/* ---------- audio ---------- */
+let actx = null, muted = store.get('hive-tetris-muted') === '1';
+function initAudio() {
+  if (actx) { if (actx.state === 'suspended') actx.resume(); return; }
+  try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { actx = null; }
+}
+function tone(f, d, delay = 0, type = 'square', vol = 0.04) {
+  const t = actx.currentTime + delay;
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d + 0.03);
+}
+const SFX = {
+  move:   [[240, 0.03, 0, 'square', 0.015]],
+  rotate: [[360, 0.05, 0, 'square', 0.025]],
+  lock:   [[120, 0.09, 0, 'triangle', 0.08]],
+  clear:  [[523, 0.08, 0], [659, 0.08, 0.06], [784, 0.14, 0.12]],
+  big:    [[523, 0.09, 0], [659, 0.09, 0.07], [784, 0.09, 0.14], [1047, 0.25, 0.21, 'square', 0.05]],
+  good:   [[880, 0.08, 0, 'triangle', 0.06], [1175, 0.16, 0.08, 'triangle', 0.06]],
+  bad:    [[180, 0.18, 0, 'sawtooth', 0.04], [120, 0.25, 0.12, 'sawtooth', 0.04]],
+  fork:   [[392, 0.1, 0, 'triangle', 0.07], [523, 0.1, 0.1, 'triangle', 0.07], [659, 0.1, 0.2, 'triangle', 0.07], [784, 0.3, 0.3, 'triangle', 0.07]],
+  boom:   [[90, 0.35, 0, 'sawtooth', 0.08], [60, 0.4, 0.05, 'square', 0.05]],
+  bee:    [[660, 0.05, 0, 'sawtooth', 0.02], [700, 0.05, 0.05, 'sawtooth', 0.02], [740, 0.08, 0.1, 'sawtooth', 0.02]],
+  err:    [[100, 0.14, 0, 'square', 0.04]],
+  over:   [[392, 0.2, 0, 'triangle', 0.07], [330, 0.2, 0.2, 'triangle', 0.07], [262, 0.2, 0.4, 'triangle', 0.07], [196, 0.5, 0.6, 'triangle', 0.07]],
+  coin:   [[1319, 0.06, 0, 'square', 0.03], [1760, 0.12, 0.05, 'square', 0.03]],
+};
+function sfx(name) {
+  if (muted || !actx) return;
+  try { SFX[name].forEach(([f, d, dl, ty, v]) => tone(f, d, dl, ty, v)); } catch (e) { /* ignore audio errors */ }
+}
+function toggleMute() {
+  muted = !muted; store.set('hive-tetris-muted', muted ? '1' : '0');
+  el.muteBtn.textContent = muted ? '音效：關' : '音效：開';
+  if (!muted) initAudio();
+}
+
+/* ---------- state ---------- */
+let S;
+function freshState() {
+  return {
+    state: 'title', board: newBoard(), cur: null, queue: [], bag: [], hold: null, canHold: true,
+    hive: 0, hbd: 0, lines: 0, hf: 24, hfMax: 24, era: ERAS[0], combo: -1, maxCombo: 0,
+    rc: RC_MAX, t: 0, blockAcc: 0, height: 101000000 + rint(0, 899999), blocks: 0,
+    nextEvent: 12000, frozenUntil: 0, dropAcc: 0, lockT: 0, lockResets: 0, clearing: null,
+    fx: [], parts: [], feed: [], feedDirty: true, pieceCount: 0, shake: 0, beesSummoned: 0,
+  };
+}
+const lvl = () => (S.hf - 24) + (S.era.id === 'fast' ? 2 : 0);
+const mult = () => S.hf - 23;
+const gravityMs = () => Math.max(55, Math.round(850 * Math.pow(0.8, lvl())));
+
+function makeQ(type) {
+  const m = clone(PIECES[type].m);
+  if (!PIECES[type].special) {
+    const coinP = 0.10 * (S.era.id === 'air' ? 3 : 1);
+    const cells = [];
+    m.forEach((r, y) => r.forEach((v, x) => { if (v) cells.push([y, x]); }));
+    const r = Math.random();
+    if (r < coinP) { const [y, x] = pick(cells); m[y][x] = 2; }
+    else if (r < coinP + 0.06) { const [y, x] = pick(cells); m[y][x] = 3; }
+  }
+  return { type, base: m };
+}
+function genPiece() {
+  S.pieceCount++;
+  if (S.era.id === 'bee' && S.pieceCount % 7 === 0) return makeQ('B');
+  if (S.hf >= 25 && Math.random() < 0.035) return makeQ('F');
+  if (!S.bag.length) S.bag = shuffle(['I', 'O', 'T', 'S', 'Z', 'J', 'L']);
+  return makeQ(S.bag.pop());
+}
+function fillQueue() { while (S.queue.length < 4) S.queue.push(genPiece()); }
+function makeActive(q) {
+  const m = clone(q.base);
+  return { type: q.type, special: PIECES[q.type].special || null, m, base: q.base,
+           x: Math.floor((COLS - m[0].length) / 2), y: -topRow(m) };
+}
+function collides(p, dx, dy, m = p.m) {
+  for (let y = 0; y < m.length; y++) for (let x = 0; x < m[y].length; x++) {
+    if (!m[y][x]) continue;
+    const bx = p.x + x + dx, by = p.y + y + dy;
+    if (bx < 0 || bx >= COLS || by >= ROWS) return true;
+    if (by >= 0 && S.board[by][bx]) return true;
+  }
+  return false;
+}
+function cellsOf(p) {
+  const out = [];
+  p.m.forEach((r, y) => r.forEach((v, x) => { if (v) out.push([p.x + x, p.y + y, v]); }));
+  return out;
+}
+
+/* ---------- feed / banner / fx ---------- */
+let bannerTimer = 0;
+function banner(title, sub, tone = 'info') {
+  el.banner.innerHTML = '';
+  const b = document.createElement('b'); b.textContent = title;
+  const s = document.createElement('span'); s.textContent = sub;
+  el.banner.append(b, s);
+  el.banner.className = 'banner show ' + tone;
+  clearTimeout(bannerTimer);
+  bannerTimer = setTimeout(() => el.banner.classList.remove('show'), 1900);
+}
+function log(text, tone = 'info') {
+  S.feed.unshift({ h: S.height, text, tone });
+  if (S.feed.length > 7) S.feed.length = 7;
+  S.feedDirty = true;
+}
+function renderFeed() {
+  if (!S.feedDirty) return;
+  S.feedDirty = false;
+  el.feed.innerHTML = '';
+  if (!S.feed.length) {
+    const li = document.createElement('li'); li.className = 'empty';
+    li.textContent = S.state === 'title' ? '開始遊戲後，鏈上事件會出現在這裡。' : '這條鏈目前風平浪靜。';
+    el.feed.append(li); return;
+  }
+  for (const f of S.feed) {
+    const li = document.createElement('li'); li.className = f.tone;
+    const h = document.createElement('span'); h.className = 'h'; h.textContent = '#' + f.h.toLocaleString('en-US');
+    li.append(h, document.createTextNode(f.text));
+    el.feed.append(li);
+  }
+}
+function floatText(text, x, y, color = '#fff') { S.fx.push({ text, x, y, color, life: 1100, max: 1100 }); }
+function burst(x, y, color, n = 10, speed = 6) {
+  if (REDUCED) n = Math.min(n, 3);
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, v = (0.4 + Math.random()) * speed;
+    S.parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, life: 600 + Math.random() * 400, color });
+  }
+}
+function addHive(milli) { S.hive += Math.round(milli); }
+
+/* ---------- core actions ---------- */
+function spawn() {
+  fillQueue();
+  S.cur = makeActive(S.queue.shift());
+  fillQueue();
+  S.lockT = 0; S.lockResets = 0; S.dropAcc = 0;
+  if (collides(S.cur, 0, 0)) gameOver();
+}
+function touchLock() { if (S.lockResets < 15 && collides(S.cur, 0, 1)) { S.lockT = 0; S.lockResets++; } }
+function move(dir) {
+  if (!S.cur || S.clearing) return false;
+  if (collides(S.cur, dir, 0)) return false;
+  S.cur.x += dir; touchLock(); sfx('move');
+  return true;
+}
+function rotate(dir) {
+  const p = S.cur;
+  if (!p || S.clearing || p.type === 'O' || p.m.length === 1) return;
+  const nm = rotateM(p.m, dir);
+  const kicks = [[0, 0], [-1, 0], [1, 0], [-2, 0], [2, 0], [0, -1], [-1, -1], [1, -1]];
+  for (const [kx, ky] of kicks) {
+    if (!collides(p, kx, ky, nm)) { p.m = nm; p.x += kx; p.y += ky; touchLock(); sfx('rotate'); return; }
+  }
+}
+function beeTarget(p) {
+  for (let y = ROWS - 1; y >= 0; y--) if (!S.board[y][p.x]) return y;
+  return -1;
+}
+function ghostY(p) { let d = 0; while (!collides(p, 0, d + 1)) d++; return p.y + d; }
+function hardDrop() {
+  const p = S.cur;
+  if (!p || S.clearing) return;
+  if (p.special === 'bee') { const ty = beeTarget(p); if (ty > p.y) addHive(2 * (ty - p.y)); lockPiece(); return; }
+  let d = 0; while (!collides(p, 0, 1)) { p.y++; d++; }
+  addHive(2 * d);
+  if (d > 2 && !REDUCED) S.shake = 90;
+  lockPiece();
+}
+function doHold() {
+  if (!S.cur || S.clearing) return;
+  if (!S.canHold) { banner('本回合已保留過', '方塊落地後才能再保留', 'info'); sfx('err'); return; }
+  if (S.rc < HOLD_COST) { banner('RC 不足', `保留需要 ${HOLD_COST} RC，稍等回復`, 'bad'); sfx('err'); return; }
+  S.rc -= HOLD_COST;
+  const cur = S.cur;
+  if (S.hold) { S.cur = makeActive(S.hold); S.lockT = 0; S.lockResets = 0; S.dropAcc = 0; if (collides(S.cur, 0, 0)) gameOver(); }
+  else spawn();
+  S.hold = { type: cur.type, base: cur.base };
+  S.canHold = false;
+  sfx('rotate');
+}
+function summonBee() {
+  if (S.state !== 'play') return;
+  if (S.rc < BEE_COST) { banner('RC 不足', `召喚工蜂需要 ${BEE_COST} RC`, 'bad'); sfx('err'); return; }
+  if (S.queue[0] && S.queue[0].type === 'B') { banner('工蜂已在路上', '下一個方塊就是工蜂', 'info'); return; }
+  S.rc -= BEE_COST; S.beesSummoned++;
+  S.queue.unshift(makeQ('B'));
+  log('你廣播了 custom_json，召喚一隻工蜂。下一個方塊會鑽到底部補洞。', 'good');
+  banner('工蜂出動', '下一個方塊會鑽到該欄最底下的空格', 'good');
+  sfx('bee');
+}
+
+function lockPiece() {
+  const p = S.cur; S.cur = null;
+  if (p.special === 'bee') {
+    const ty = beeTarget(p);
+    if (ty < 0) { gameOver(); return; }
+    S.board[ty][p.x] = { t: 'B', k: null };
+    for (let y = Math.max(0, p.y); y <= ty; y += 2) burst(p.x + 0.5, y + 0.5, '#ffc93c', 2, 3);
+    floatText('補洞', p.x + 0.5, ty + 0.2, '#ffc93c');
+    sfx('bee');
+  } else if (p.special === 'flag') {
+    let n = 0, coins = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const x = p.x + dx, y = p.y + dy;
+      if (x < 0 || x >= COLS || y < 0 || y >= ROWS || !S.board[y][x]) continue;
+      if (S.board[y][x].k === 'coin') coins++;
+      S.board[y][x] = null; n++;
+    }
+    addHive((n * 30 + coins * 50) * mult());
+    burst(p.x + 0.5, p.y + 0.5, '#ff5d73', 26, 9);
+    burst(p.x + 0.5, p.y + 0.5, '#f5a524', 14, 6);
+    floatText(n ? `旗標 ${n} 格` : '炸空了', p.x + 0.5, p.y, '#ff5d73');
+    if (!REDUCED) S.shake = 260;
+    sfx('boom');
+  } else {
+    let out = false;
+    for (const [x, y, v] of cellsOf(p)) {
+      if (y < 0) { out = true; continue; }
+      S.board[y][x] = { t: p.type, k: v === 2 ? 'coin' : v === 3 ? 'hbd' : null };
+    }
+    if (out) { gameOver(); return; }
+    sfx('lock');
+  }
+  S.canHold = true;
+  checkLines(true);
+}
+
+function checkLines(fromLock) {
+  if (S.clearing || S.state !== 'play') return;
+  const rows = [];
+  for (let y = 0; y < ROWS; y++) if (S.board[y].every(Boolean)) rows.push(y);
+  if (!rows.length) { if (fromLock) S.combo = -1; return; }
+  const n = rows.length, m = mult();
+  let coins = 0, hbds = 0;
+  for (const y of rows) for (const c of S.board[y]) { if (c.k === 'coin') coins++; if (c.k === 'hbd') hbds++; }
+  let gain = [0, 100, 300, 500, 800][Math.min(n, 4)] * m;
+  if (fromLock) {
+    S.combo++;
+    if (S.combo > 0) gain += 50 * S.combo * m;
+    S.maxCombo = Math.max(S.maxCombo, S.combo);
+  }
+  gain += coins * 250 * m;
+  addHive(gain);
+  if (hbds) S.hbd += hbds * 500;
+  S.lines += n;
+  const midY = rows[Math.floor(rows.length / 2)];
+  floatText('+' + fmt3(gain) + ' HIVE', COLS / 2, midY, '#fff');
+  if (coins) floatText(`代幣 x${coins}`, COLS / 2, midY + 1.1, '#ff8da0');
+  if (hbds) floatText(`+${fmt3(hbds * 500)} HBD`, COLS / 2, midY + (coins ? 2.2 : 1.1), '#2ec4b6');
+  if (n >= 4) {
+    banner('鯨魚級清除', `一次 4 列，+${fmt3(gain)} HIVE`, 'good');
+    log(`你一次清除 4 列，被 ${pick(ACCTS)} 轉推到熱門。`, 'good');
+    if (!REDUCED) S.shake = 220;
+    sfx('big');
+  } else {
+    if (fromLock && S.combo >= 2) banner(`策展連擊 x${S.combo}`, '連續清除帶來額外獎勵', 'good');
+    sfx(coins || hbds ? 'coin' : 'clear');
+  }
+  for (const y of rows) for (let x = 0; x < COLS; x++) if (Math.random() < 0.5) burst(x + 0.5, y + 0.5, colorOf(S.board[y][x].t), 2, 5);
+  S.clearing = { rows, t: CLEAR_MS };
+}
+function finishClear() {
+  const rows = S.clearing.rows;
+  S.clearing = null;
+  S.board = S.board.filter((_, y) => !rows.includes(y));
+  while (S.board.length < ROWS) S.board.unshift(emptyRow());
+  resolveOverlap();
+  const hf = 24 + Math.floor(S.lines / 10);
+  if (hf > S.hf) hardfork(hf);
+}
+function resolveOverlap() {
+  if (!S.cur) return;
+  let n = 0;
+  while (collides(S.cur, 0, 0) && n < 4) { S.cur.y--; n++; }
+}
+function hardfork(hf) {
+  S.hf = hf; S.hfMax = Math.max(S.hfMax, hf);
+  const choices = ERAS.filter(e => e.id !== 'std' && e.id !== S.era.id);
+  S.era = pick(choices);
+  banner(`Hardfork ${hf} 啟用`, `${S.era.name}：${S.era.desc}`, 'fork');
+  log(`見證人完成共識，HF${hf} 上線。新時代：${S.era.name}。`, 'fork');
+  S.rc = Math.min(RC_MAX, S.rc + 25);
+  sfx('fork');
+}
+
+/* ---------- chain events ---------- */
+function boardHasBlocks() { return S.board.some(r => r.some(Boolean)); }
+function filledCells() {
+  const out = [];
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (S.board[y][x]) out.push([x, y]);
+  return out;
+}
+const EVENTS = [
+  { id: 'upvote', w: 2, run() {
+      const who = pick(ACCTS), m = mult();
+      if (!boardHasBlocks()) { addHive(100 * m); log(`${who} 給你 100% 鯨魚票，入帳 +${fmt3(100 * m)} HIVE。`, 'good'); banner('鯨魚投票', `+${fmt3(100 * m)} HIVE`, 'good'); sfx('good'); return; }
+      for (let x = 0; x < COLS; x++) if (S.board[ROWS - 1][x]) burst(x + 0.5, ROWS - 0.5, '#7bd389', 2, 4);
+      S.board.pop(); S.board.unshift(emptyRow());
+      resolveOverlap();
+      addHive(200 * m);
+      log(`${who} 給你 100% 鯨魚票，最底下一列被清除。`, 'good');
+      banner('鯨魚投票', `底部一列被清除，+${fmt3(200 * m)} HIVE`, 'good');
+      sfx('good');
+  } },
+  { id: 'downvote', w: 2, when: () => S.t > 25000, run() {
+      const who = pick(SPAMMERS);
+      const over = S.board[0].some(Boolean);
+      const hole = rint(0, COLS - 1);
+      S.board.shift();
+      S.board.push(Array.from({ length: COLS }, (_, x) => (x === hole ? null : { t: 'G', k: null })));
+      resolveOverlap();
+      log(`${who} 對你投下反對票，底部被推入一列垃圾。`, 'bad');
+      banner('反對票', '底部被推入一列垃圾，留了一個缺口', 'bad');
+      if (!REDUCED) S.shake = 160;
+      sfx('bad');
+      if (over) gameOver();
+  } },
+  { id: 'airdrop', w: 2, run() {
+      const cells = shuffle(filledCells().filter(([x, y]) => !S.board[y][x].k && S.board[y][x].t !== 'G')).slice(0, 3);
+      if (!cells.length) { addHive(500); log('社群空投抵達，你的盤面是空的，直接入帳 +0.500 HIVE。', 'good'); banner('社群空投', '+0.500 HIVE', 'good'); sfx('coin'); return; }
+      for (const [x, y] of cells) { S.board[y][x].k = 'coin'; burst(x + 0.5, y + 0.5, '#e31337', 6, 4); }
+      log(`社群空投抵達，${cells.length} 個方塊裡出現了 HIVE 代幣。`, 'good');
+      banner('社群空投', `${cells.length} 個方塊變成 HIVE 代幣，清除它們吧`, 'good');
+      sfx('coin');
+  } },
+  { id: 'missed', w: 1.5, run() {
+      S.frozenUntil = S.t + 4000;
+      log(`見證人 ${pick(ACCTS)} 錯過出塊，重力暫停 4 秒。`, 'info');
+      banner('出塊失敗', '見證人錯過區塊，重力暫停 4 秒', 'info');
+      sfx('good');
+  } },
+  { id: 'swarm', w: 1.5, run() {
+      const holes = [];
+      const curCells = S.cur ? cellsOf(S.cur).map(([x, y]) => x + ',' + y) : [];
+      for (let x = 0; x < COLS; x++) {
+        let seen = false;
+        for (let y = 0; y < ROWS; y++) {
+          if (S.board[y][x]) seen = true;
+          else if (seen && !curCells.includes(x + ',' + y)) holes.push([x, y]);
+        }
+      }
+      holes.sort((a, b) => b[1] - a[1]);
+      const fill = holes.slice(0, 3);
+      if (!fill.length) { S.rc = Math.min(RC_MAX, S.rc + 30); log('蜂群巡了一圈沒找到洞，順手送你 30 RC。', 'good'); banner('蜂群出動', '盤面沒有空洞，RC +30', 'good'); sfx('bee'); return; }
+      for (const [x, y] of fill) { S.board[y][x] = { t: 'B', k: null }; burst(x + 0.5, y + 0.5, '#ffc93c', 6, 4); }
+      log(`蜂群出動，補上 ${fill.length} 個被蓋住的空洞。`, 'good');
+      banner('蜂群出動', `補上 ${fill.length} 個被蓋住的空洞`, 'good');
+      sfx('bee');
+      checkLines(false);
+  } },
+  { id: 'rcfull', w: 1, run() {
+      const who = pick(ACCTS);
+      S.rc = RC_MAX;
+      log(`${who} 委託 HP 給你，RC 回滿。`, 'good');
+      banner('HP 委託', `${who} 委託了 HP，RC 回滿`, 'good');
+      sfx('good');
+  } },
+  { id: 'spam', w: 1, when: () => S.t > 25000, run() {
+      S.rc = Math.max(0, S.rc - 40);
+      log(`${pick(SPAMMERS)} 發動垃圾交易洪水，你的 RC 被吃掉 40。`, 'bad');
+      banner('垃圾交易洪水', 'RC -40', 'bad');
+      sfx('bad');
+  } },
+];
+function fireEvent() {
+  const list = EVENTS.filter(e => !e.when || e.when());
+  const ws = list.map(e => e.w * (S.era.id === 'whale' && e.id === 'upvote' ? 3 : 1));
+  let r = Math.random() * ws.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < list.length; i++) { r -= ws[i]; if (r <= 0) { list[i].run(); return; } }
+  list[list.length - 1].run();
+}
+function scheduleEvent() {
+  S.nextEvent = S.t + rint(15000, 26000) * (S.era.id === 'whale' ? 0.55 : 1);
+}
+function payInterest() {
+  if (S.hbd <= 0) return;
+  const gain = Math.max(1, Math.round(S.hbd * 0.05 * (S.era.id === 'rate' ? 2 : 1)));
+  S.hbd += gain;
+  log(`HBD 儲蓄利息入帳 +${fmt3(gain)} HBD。`, 'good');
+}
+
+/* ---------- input ---------- */
+const held = { h: null, down: false };
+function inputDown(a) {
+  if (a === 'mute') { toggleMute(); return; }
+  if (a === 'pause') { togglePause(); return; }
+  if (S.state !== 'play') return;
+  switch (a) {
+    case 'left': case 'right': {
+      let dir = a === 'left' ? -1 : 1;
+      if (S.era.id === 'mirror') dir = -dir;
+      held.h = { dir, t: -DAS, key: a };
+      move(dir);
+      break;
+    }
+    case 'down': held.down = true; break;
+    case 'rotate': rotate(1); break;
+    case 'rotateL': rotate(-1); break;
+    case 'drop': hardDrop(); break;
+    case 'hold': doHold(); break;
+    case 'bee': summonBee(); break;
+  }
+}
+function inputUp(a) {
+  if ((a === 'left' || a === 'right') && held.h && held.h.key === a) held.h = null;
+  if (a === 'down') held.down = false;
+}
+const KEYMAP = {
+  ArrowLeft: 'left', ArrowRight: 'right', ArrowDown: 'down', ArrowUp: 'rotate', KeyX: 'rotate', KeyZ: 'rotateL',
+  Space: 'drop', KeyC: 'hold', ShiftLeft: 'hold', ShiftRight: 'hold', KeyB: 'bee', KeyP: 'pause', Escape: 'pause', KeyM: 'mute',
+};
+addEventListener('keydown', e => {
+  if ((S.state === 'title' || S.state === 'over') && (e.code === 'Enter' || e.code === 'Space')) { e.preventDefault(); startGame(); return; }
+  if (S.state === 'pause' && e.code === 'Enter') { e.preventDefault(); togglePause(); return; }
+  const a = KEYMAP[e.code];
+  if (!a) return;
+  e.preventDefault();
+  if (e.repeat) return;
+  inputDown(a);
+});
+addEventListener('keyup', e => { const a = KEYMAP[e.code]; if (a) inputUp(a); });
+document.querySelectorAll('#touch button').forEach(btn => {
+  const a = btn.dataset.act;
+  btn.addEventListener('pointerdown', e => { e.preventDefault(); initAudio(); inputDown(a); });
+  const up = () => inputUp(a);
+  btn.addEventListener('pointerup', up); btn.addEventListener('pointercancel', up); btn.addEventListener('pointerleave', up);
+  btn.addEventListener('contextmenu', e => e.preventDefault());
+});
+boardCv.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' && S.state === 'play') rotate(1); });
+el.beeBtn.addEventListener('click', () => summonBee());
+el.pauseBtn.addEventListener('click', () => togglePause());
+el.muteBtn.addEventListener('click', () => toggleMute());
+el.muteBtn.textContent = muted ? '音效：關' : '音效：開';
+document.addEventListener('visibilitychange', () => { if (document.hidden && S.state === 'play') togglePause(); });
+function handleHeld(dt) {
+  if (!held.h) return;
+  held.h.t += dt;
+  while (held.h && held.h.t >= ARR) {
+    held.h.t -= ARR;
+    if (!move(held.h.dir)) { held.h.t = 0; break; }
+  }
+}
+
+/* ---------- game flow ---------- */
+function startGame() {
+  initAudio();
+  S = freshState();
+  S.state = 'play';
+  held.h = null; held.down = false;
+  fillQueue();
+  log('創世區塊已產出，祝你出塊順利。', 'info');
+  el.overlay.hidden = true;
+  el.pauseBtn.textContent = '暫停';
+  sfx('fork');
+}
+function togglePause() {
+  if (S.state === 'play') {
+    S.state = 'pause'; held.h = null; held.down = false;
+    el.pauseBtn.textContent = '繼續';
+    showSheet(`
+      <h2>鏈已暫停</h2>
+      <p class="lead">見證人正在喝咖啡。區塊高度停在 #${S.height.toLocaleString('en-US')}。</p>
+      <div class="actions"><button class="primary" data-act="resume" type="button">繼續出塊</button>
+      <button class="secondary" data-act="start" type="button">重新開始</button></div>`);
+  } else if (S.state === 'pause') {
+    S.state = 'play'; el.overlay.hidden = true; el.pauseBtn.textContent = '暫停';
+  }
+}
+function gameOver() {
+  if (S.state === 'over') return;
+  S.state = 'over'; S.cur = null;
+  sfx('over');
+  const total = S.hive + S.hbd;
+  const best = parseInt(store.get('hive-tetris-best') || '0', 10) || 0;
+  const record = total > best;
+  if (record) store.set('hive-tetris-best', String(total));
+  setTimeout(() => showSheet(`
+    <h2>鏈停止出塊</h2>
+    <p class="lead">方塊堆到最上面，再也塞不進新的交易了。</p>
+    <dl class="result">
+      <div class="total"><dt>總資產（1 HBD 計為 1 HIVE）</dt><dd>${fmt3(total)}</dd></div>
+      <div><dt>錢包 HIVE</dt><dd>${fmt3(S.hive)}</dd></div>
+      <div><dt>HBD 儲蓄</dt><dd>${fmt3(S.hbd)}</dd></div>
+      <div><dt>清除列數</dt><dd>${S.lines}</dd></div>
+      <div><dt>最高協議版本</dt><dd>HF${S.hfMax}</dd></div>
+      <div><dt>最高策展連擊</dt><dd>x${Math.max(0, S.maxCombo)}</dd></div>
+      <div><dt>產出區塊</dt><dd>${S.blocks}</dd></div>
+    </dl>
+    ${record ? '<p class="record">新的最佳紀錄！</p>' : `<p class="best">最佳總資產 <b>${fmt3(best)}</b></p><p></p>`}
+    <div class="actions"><button class="primary" data-act="start" type="button">重新開始</button></div>`), 700);
+}
+function showSheet(html) {
+  el.sheet.innerHTML = html;
+  el.overlay.hidden = false;
+  paintIcons();
+  const btn = el.sheet.querySelector('.primary');
+  if (btn) btn.focus({ preventScroll: true });
+}
+el.sheet.addEventListener('click', e => {
+  const b = e.target.closest('button[data-act]');
+  if (!b) return;
+  if (b.dataset.act === 'start') startGame();
+  if (b.dataset.act === 'resume') togglePause();
+});
+function showTitle() {
+  const best = parseInt(store.get('hive-tetris-best') || '0', 10) || 0;
+  showSheet(`
+    <div class="logo"><span class="hexmark" aria-hidden="true"></span><h1>HIVE<em>方塊鏈</em></h1></div>
+    <p class="lead">每 3 秒產出一個區塊。把交易疊整齊、清除整列，就能把 HIVE 賺進錢包。小心反對票，也別忘了鯨魚。</p>
+    <ul class="rules">
+      <li><canvas data-icon="coin"></canvas><div><b>HIVE 代幣</b>清除含代幣的列，額外入帳 HIVE。</div></li>
+      <li><canvas data-icon="hbd"></canvas><div><b>HBD 代幣</b>存進儲蓄，每 20 個區塊派息 5%。</div></li>
+      <li><canvas data-icon="bee"></canvas><div><b>工蜂</b>落地後鑽到該欄最底下的空格補洞。</div></li>
+      <li><canvas data-icon="flag"></canvas><div><b>旗標炸彈</b>HF25 起偶爾出現，炸掉周圍 3×3。</div></li>
+      <li><span class="ico rc"></span><div><b>資源點數 RC</b>保留方塊、召喚工蜂都要花 RC，會隨時間回復。</div></li>
+      <li><span class="ico fork"></span><div><b>硬分叉</b>每清 10 列升級協議，加速並隨機換一個時代規則。</div></li>
+      <li><canvas data-icon="garbage"></canvas><div><b>鏈上事件</b>鯨魚投票、反對票、空投、出塊失敗隨時發生。</div></li>
+      <li><canvas data-icon="combo"></canvas><div><b>策展連擊</b>連續落子都有清列，獎勵一路疊加。</div></li>
+    </ul>
+    <div class="keys">
+      <span><kbd>←</kbd><kbd>→</kbd> 移動</span><span><kbd>↑</kbd><kbd>X</kbd> 旋轉</span><span><kbd>Z</kbd> 逆轉</span>
+      <span><kbd>↓</kbd> 軟降</span><span><kbd>空白</kbd> 硬降</span><span><kbd>C</kbd> 保留</span><span><kbd>B</kbd> 工蜂</span><span><kbd>P</kbd> 暫停</span>
+    </div>
+    <div class="actions"><button class="primary" data-act="start" type="button">開始出塊</button>
+    <p class="best">${best ? `最佳總資產 <b>${fmt3(best)}</b>` : '手機可用下方按鈕操作，點盤面也能旋轉。'}</p></div>`);
+}
+function demoBoard() {
+  const b = newBoard(), types = 'IOTSZJL';
+  for (let y = ROWS - 7; y < ROWS; y++) {
+    const gap = rint(0, COLS - 1);
+    for (let x = 0; x < COLS; x++) {
+      if (x === gap || (y < ROWS - 4 && Math.random() < 0.35)) continue;
+      b[y][x] = { t: types[rint(0, 6)], k: Math.random() < 0.08 ? 'coin' : Math.random() < 0.04 ? 'hbd' : null };
+    }
+  }
+  b[ROWS - 2][3] = { t: 'B', k: null };
+  return b;
+}
+
+/* ---------- update ---------- */
+function update(dt) {
+  S.t += dt;
+  S.shake = Math.max(0, S.shake - dt);
+  S.blockAcc += dt;
+  while (S.blockAcc >= BLOCK_MS) {
+    S.blockAcc -= BLOCK_MS; S.height++; S.blocks++;
+    if (S.blocks % INTEREST_BLOCKS === 0) payInterest();
+  }
+  S.rc = Math.min(RC_MAX, S.rc + dt / 1000 * (S.era.id === 'rc' ? 2 : 4));
+  if (!S.clearing && S.t >= S.nextEvent) { fireEvent(); scheduleEvent(); }
+  if (S.state !== 'play') return;
+  if (S.clearing) {
+    S.clearing.t -= dt;
+    if (S.clearing.t <= 0) finishClear();
+    return;
+  }
+  if (!S.cur) { spawn(); if (S.state !== 'play') return; }
+  handleHeld(dt);
+  if (!S.cur) return;
+  const frozen = S.t < S.frozenUntil;
+  if (!frozen || held.down) {
+    const g = held.down ? Math.min(gravityMs(), 35) : gravityMs();
+    S.dropAcc += dt;
+    while (S.dropAcc >= g) {
+      S.dropAcc -= g;
+      if (collides(S.cur, 0, 1)) { S.dropAcc = 0; break; }
+      S.cur.y++;
+      if (held.down) addHive(1);
+    }
+  }
+  if (collides(S.cur, 0, 1)) {
+    S.lockT += dt;
+    if (S.lockT >= LOCK_MS) lockPiece();
+  } else S.lockT = 0;
+}
+function updateFx(dt) {
+  for (const f of S.fx) { f.life -= dt; f.y -= dt / 1000 * 1.2; }
+  S.fx = S.fx.filter(f => f.life > 0);
+  for (const p of S.parts) { p.life -= dt; p.vy += dt / 1000 * 18; p.x += p.vx * dt / 1000; p.y += p.vy * dt / 1000; }
+  S.parts = S.parts.filter(p => p.life > 0);
+}
+
+/* ---------- drawing ---------- */
+let cs = 30, pcs = 18, dpr = 1;
+function sizeCanvas(cv, w, h) {
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  cv.style.width = w + 'px'; cv.style.height = h + 'px';
+  cv.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function layout() {
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  const mobile = matchMedia('(max-width: 760px)').matches;
+  const touch = getComputedStyle($('#touch')).display !== 'none';
+  if (mobile) {
+    const rail = Math.max(60, Math.min(96, Math.floor(window.innerWidth * 0.16)));
+    const byW = (window.innerWidth - 32 - rail * 2 - 16) / COLS;
+    const byH = (window.innerHeight - 20 - (touch ? 190 : 0)) / ROWS;
+    cs = Math.max(16, Math.min(30, Math.floor(Math.min(byW, byH))));
+    pcs = Math.max(9, Math.floor((rail - 18) / 4.4));
+  } else {
+    const byH = (window.innerHeight - 50 - (touch ? 190 : 0)) / ROWS;
+    cs = Math.max(20, Math.min(34, Math.floor(byH)));
+    pcs = 18;
+  }
+  sizeCanvas(boardCv, cs * COLS, cs * ROWS);
+  sizeCanvas(holdCv, pcs * 4.6, pcs * 3);
+  sizeCanvas(nextCv, pcs * 4.6, pcs * (mobile ? 6.6 : 9.6));
+}
+addEventListener('resize', layout);
+
+function shadeHex(hex, amt) {
+  const n = parseInt(hex.slice(1), 16);
+  let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  const t = amt > 0 ? 255 : 0, a = Math.abs(amt);
+  r = Math.round(r + (t - r) * a); g = Math.round(g + (t - g) * a); b = Math.round(b + (t - b) * a);
+  return `rgb(${r},${g},${b})`;
+}
+function rr(c, x, y, w, h, r) {
+  c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
+}
+function hexPath(c, cx, cy, r) {
+  c.beginPath();
+  for (let i = 0; i < 6; i++) { const a = Math.PI / 180 * (60 * i - 90); c[i ? 'lineTo' : 'moveTo'](cx + r * Math.cos(a), cy + r * Math.sin(a)); }
+  c.closePath();
+}
+function drawCell(c, px, py, s, t, k, alpha = 1) {
+  const color = colorOf(t);
+  c.save(); c.globalAlpha = alpha;
+  const pad = Math.max(1, s * 0.04);
+  rr(c, px + pad, py + pad, s - pad * 2, s - pad * 2, Math.max(2, s * 0.18));
+  const g = c.createLinearGradient(px, py, px + s, py + s);
+  g.addColorStop(0, shadeHex(color, 0.28)); g.addColorStop(1, shadeHex(color, -0.22));
+  c.fillStyle = g; c.fill();
+  c.lineWidth = Math.max(1, s * 0.05);
+  c.strokeStyle = 'rgba(0,0,0,0.25)'; c.stroke();
+  c.save(); c.clip();
+  if (t === 'B') {
+    c.fillStyle = 'rgba(40,20,0,0.6)';
+    c.fillRect(px, py + s * 0.38, s, s * 0.13); c.fillRect(px, py + s * 0.63, s, s * 0.13);
+    c.fillStyle = 'rgba(255,255,255,0.65)';
+    c.beginPath(); c.ellipse(px + s * 0.34, py + s * 0.22, s * 0.16, s * 0.1, -0.5, 0, Math.PI * 2);
+    c.ellipse(px + s * 0.66, py + s * 0.22, s * 0.16, s * 0.1, 0.5, 0, Math.PI * 2); c.fill();
+  } else if (t === 'F') {
+    c.strokeStyle = '#f6ecef'; c.lineWidth = Math.max(1.5, s * 0.07);
+    c.beginPath(); c.moveTo(px + s * 0.32, py + s * 0.2); c.lineTo(px + s * 0.32, py + s * 0.82); c.stroke();
+    c.fillStyle = '#ff5d73';
+    c.beginPath(); c.moveTo(px + s * 0.34, py + s * 0.2); c.lineTo(px + s * 0.78, py + s * 0.34); c.lineTo(px + s * 0.34, py + s * 0.5); c.closePath(); c.fill();
+  } else if (t === 'G') {
+    c.strokeStyle = 'rgba(255,255,255,0.08)'; c.lineWidth = Math.max(1, s * 0.06);
+    for (let i = -1; i < 3; i++) { c.beginPath(); c.moveTo(px + i * s * 0.4, py + s); c.lineTo(px + i * s * 0.4 + s, py); c.stroke(); }
+  } else {
+    c.strokeStyle = 'rgba(255,255,255,0.22)'; c.lineWidth = Math.max(1, s * 0.05);
+    hexPath(c, px + s / 2, py + s / 2, s * 0.27); c.stroke();
+    c.fillStyle = 'rgba(255,255,255,0.16)';
+    c.fillRect(px, py, s, s * 0.14);
+  }
+  c.restore();
+  if (k === 'coin' || k === 'hbd') {
+    const cx = px + s / 2, cy = py + s / 2, r = s * 0.31;
+    c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2);
+    c.fillStyle = k === 'coin' ? '#e31337' : '#f6ecef'; c.fill();
+    c.lineWidth = Math.max(1, s * 0.06); c.strokeStyle = k === 'coin' ? '#fff' : '#0e7d73'; c.stroke();
+    c.fillStyle = k === 'coin' ? '#fff' : '#0e7d73';
+    c.font = `800 ${Math.round(s * 0.36)}px Oxanium, system-ui, sans-serif`;
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillText(k === 'coin' ? 'H' : '$', cx, cy + s * 0.02);
+  }
+  c.restore();
+}
+function drawOutline(c, px, py, s, color, alpha = 0.55) {
+  c.save(); c.globalAlpha = alpha;
+  const pad = Math.max(2, s * 0.1);
+  rr(c, px + pad, py + pad, s - pad * 2, s - pad * 2, Math.max(2, s * 0.16));
+  c.strokeStyle = color; c.lineWidth = Math.max(1.5, s * 0.07); c.stroke();
+  c.restore();
+}
+function drawPreview(c, q, cx, cy, s, alpha = 1) {
+  const m = q.base;
+  let minX = 9, maxX = -1, minY = 9, maxY = -1;
+  m.forEach((r, y) => r.forEach((v, x) => { if (v) { minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y); } }));
+  const w = (maxX - minX + 1) * s, h = (maxY - minY + 1) * s;
+  m.forEach((r, y) => r.forEach((v, x) => {
+    if (v) drawCell(c, cx - w / 2 + (x - minX) * s, cy - h / 2 + (y - minY) * s, s, q.type, v === 2 ? 'coin' : v === 3 ? 'hbd' : null, alpha);
+  }));
+}
+
+function render() {
+  const c = bctx, W = cs * COLS, H = cs * ROWS;
+  c.save();
+  c.fillStyle = '#12070c'; c.fillRect(0, 0, W, H);
+  if (S.shake > 0) c.translate((Math.random() - 0.5) * 6, (Math.random() - 0.5) * 6);
+  c.strokeStyle = 'rgba(255,255,255,0.035)'; c.lineWidth = 1;
+  for (let x = 1; x < COLS; x++) { c.beginPath(); c.moveTo(x * cs + 0.5, 0); c.lineTo(x * cs + 0.5, H); c.stroke(); }
+  for (let y = 1; y < ROWS; y++) { c.beginPath(); c.moveTo(0, y * cs + 0.5); c.lineTo(W, y * cs + 0.5); c.stroke(); }
+
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
+    const cell = S.board[y][x];
+    if (cell) drawCell(c, x * cs, y * cs, cs, cell.t, cell.k);
+  }
+  if (S.clearing) {
+    const a = S.clearing.t / CLEAR_MS;
+    c.fillStyle = `rgba(255,255,255,${0.15 + 0.7 * a})`;
+    for (const y of S.clearing.rows) c.fillRect(0, y * cs, W, cs);
+  }
+  const p = S.cur;
+  if (p && (S.state === 'play' || S.state === 'pause')) {
+    const color = colorOf(p.type);
+    if (p.special === 'bee') {
+      const ty = beeTarget(p);
+      if (ty >= 0) {
+        c.save(); c.setLineDash([3, 5]); c.strokeStyle = 'rgba(255,201,60,0.5)'; c.lineWidth = 2;
+        c.beginPath(); c.moveTo(p.x * cs + cs / 2, (p.y + 1) * cs); c.lineTo(p.x * cs + cs / 2, ty * cs); c.stroke(); c.restore();
+        drawOutline(c, p.x * cs, ty * cs, cs, '#ffc93c', 0.9);
+      }
+    } else {
+      const gy = ghostY(p);
+      if (p.special === 'flag') {
+        c.save(); c.strokeStyle = 'rgba(255,93,115,0.55)'; c.setLineDash([4, 4]); c.lineWidth = 2;
+        c.strokeRect((p.x - 1) * cs + 2, (gy - 1) * cs + 2, cs * 3 - 4, cs * 3 - 4); c.restore();
+      }
+      if (gy !== p.y) for (const [x, y] of cellsOf({ ...p, y: gy })) if (y >= 0) drawOutline(c, x * cs, y * cs, cs, p.special === 'flag' ? '#ff5d73' : color);
+    }
+    for (const [x, y, v] of cellsOf(p)) if (y >= 0) drawCell(c, x * cs, y * cs, cs, p.type, v === 2 ? 'coin' : v === 3 ? 'hbd' : null);
+  }
+  const frozen = S.state !== 'title' && S.t < S.frozenUntil;
+  if (frozen) { c.fillStyle = 'rgba(46,196,182,0.08)'; c.fillRect(0, 0, W, H); }
+  for (const q of S.parts) {
+    c.globalAlpha = Math.max(0, Math.min(1, q.life / 500));
+    c.fillStyle = q.color;
+    c.fillRect(q.x * cs - cs * 0.08, q.y * cs - cs * 0.08, cs * 0.16, cs * 0.16);
+  }
+  c.globalAlpha = 1;
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  for (const f of S.fx) {
+    c.globalAlpha = Math.min(1, f.life / 400);
+    c.font = `800 ${Math.round(cs * 0.62)}px Oxanium, "Noto Sans TC", sans-serif`;
+    c.lineWidth = 4; c.strokeStyle = 'rgba(18,7,12,0.85)';
+    c.strokeText(f.text, f.x * cs, f.y * cs); c.fillStyle = f.color; c.fillText(f.text, f.x * cs, f.y * cs);
+  }
+  c.restore();
+
+  // hold
+  const hw = holdCv.width / dpr, hh = holdCv.height / dpr;
+  hctx.clearRect(0, 0, hw, hh);
+  if (S.hold) drawPreview(hctx, S.hold, hw / 2, hh / 2, pcs, S.canHold ? 1 : 0.35);
+  else { hctx.fillStyle = '#6e5560'; hctx.font = `500 ${Math.max(10, pcs * 0.62)}px "Noto Sans TC", sans-serif`; hctx.textAlign = 'center'; hctx.textBaseline = 'middle'; hctx.fillText('空', hw / 2, hh / 2); }
+  // next
+  const nw = nextCv.width / dpr, nh = nextCv.height / dpr;
+  nctx.clearRect(0, 0, nw, nh);
+  const showN = Math.round(nh / (pcs * 3.2));
+  const slot = nh / showN;
+  for (let i = 0; i < showN; i++) {
+    const q = S.state === 'title' ? null : S.queue[i];
+    if (q) drawPreview(nctx, q, nw / 2, slot * i + slot / 2, i === 0 ? pcs : pcs * 0.82, i === 0 ? 1 : 0.7);
+  }
+
+  // freeze pill
+  if (frozen) { el.freeze.hidden = false; setText(el.freeze, `重力暫停 ${((S.frozenUntil - S.t) / 1000).toFixed(1)} 秒`); }
+  else el.freeze.hidden = true;
+  hud();
+}
+const textCache = new WeakMap();
+function setText(node, v) { if (textCache.get(node) !== v) { textCache.set(node, v); node.textContent = v; } }
+function hud() {
+  setText(el.hive, fmt3(S.hive));
+  setText(el.hbd, fmt3(S.hbd));
+  setText(el.lines, String(S.lines));
+  setText(el.combo, S.combo > 0 ? 'x' + S.combo : '0');
+  setText(el.hf, 'HF' + S.hf);
+  setText(el.eraName, S.era.name);
+  setText(el.eraDesc, S.era.desc);
+  el.era.classList.toggle('alert', S.era.id === 'mirror');
+  setText(el.height, '#' + S.height.toLocaleString('en-US'));
+  el.blockbar.style.width = (S.blockAcc / BLOCK_MS * 100).toFixed(1) + '%';
+  el.rcbar.style.width = (S.rc / RC_MAX * 100).toFixed(1) + '%';
+  el.rcmeter.classList.toggle('low', S.rc < HOLD_COST);
+  setText(el.rcval, `${Math.floor(S.rc)} / ${RC_MAX}`);
+  setText(el.rcrate, S.era.id === 'rc' ? '+2/秒' : '+4/秒');
+  setText(el.interest, `距離派息 ${INTEREST_BLOCKS - (S.blocks % INTEREST_BLOCKS)} 個區塊${S.era.id === 'rate' ? '，利率加倍' : ''}`);
+  el.beeBtn.disabled = S.state !== 'play' || S.rc < BEE_COST;
+  renderFeed();
+}
+function paintIcons() {
+  el.sheet.querySelectorAll('canvas[data-icon]').forEach(cv => {
+    sizeCanvas(cv, 26, 26);
+    const c = cv.getContext('2d'), k = cv.dataset.icon;
+    if (k === 'coin') drawCell(c, 1, 1, 24, 'I', 'coin');
+    else if (k === 'hbd') drawCell(c, 1, 1, 24, 'O', 'hbd');
+    else if (k === 'bee') drawCell(c, 1, 1, 24, 'B', null);
+    else if (k === 'flag') drawCell(c, 1, 1, 24, 'F', null);
+    else if (k === 'garbage') drawCell(c, 1, 1, 24, 'G', null);
+    else if (k === 'combo') { drawCell(c, 0, 13, 13, 'S', null); drawCell(c, 13, 13, 13, 'T', null); drawCell(c, 13, 0, 13, 'L', null); }
+  });
+}
+
+/* ---------- loop ---------- */
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(50, now - last); last = now;
+  if (S.state === 'play') update(dt);
+  if (S.state !== 'pause') updateFx(dt);
+  render();
+  requestAnimationFrame(frame);
+}
+
+S = freshState();
+S.board = demoBoard();
+S.hold = makeQ('T');
+layout();
+showTitle();
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
