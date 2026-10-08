@@ -6,7 +6,7 @@
 <title>Hive 方塊鏈</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;700;800&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
 /* Layout: arcade cabinet in three rails. Left = hold + wallet, center = the chain (board), right = protocol state, RC and the block feed.
    On phones the rails shrink to slim columns beside the board and touch controls sit underneath. Single dark look on purpose. */
@@ -25,11 +25,19 @@
   --move: #9cc0ff;
   --move-bg: #1d1f33;
   --move-line: #3f4a78;
-  --f-display: "Oxanium", "Noto Sans TC", system-ui, sans-serif;
-  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-body: "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-display: "Oxanium", var(--f-body);
   --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   color-scheme: dark;
 }
+/* each language gets its own body face, loaded on demand from Google Fonts */
+:root:lang(zh-Hant) { --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif; }
+:root:lang(zh-Hans) { --f-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; }
+:root:lang(ja) { --f-body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif; }
+:root:lang(ko) { --f-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; }
+:root:lang(hi) { --f-body: "Noto Sans Devanagari", "Nirmala UI", "Kohinoor Devanagari", system-ui, sans-serif; }
+/* Devanagari breaks apart with tracking, so Hindi drops all letter-spacing */
+:root:lang(hi) * { letter-spacing: 0 !important; }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { height: 100%; }
@@ -277,6 +285,7 @@ kbd {
   font-size: 34px;
 }
 .t-round.r-cw small { color: #2a1406; }
+.t-round small { max-width: 86%; text-align: center; line-height: 1.1; }
 .t-round.r-ccw small { color: var(--honey); }
 
 /* overlay sheets */
@@ -324,6 +333,78 @@ kbd {
 .result .total dd { font-size: 26px; color: var(--fg); }
 .record { color: var(--honey); font-weight: 700; margin: 0 0 14px; }
 
+/* home page */
+.home {
+  max-width: 1080px; margin: 0 auto;
+  padding-block: 18px 48px; padding-inline: 16px;
+  display: flex; flex-direction: column; gap: 26px;
+}
+.home-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.globe { width: 16px; height: 16px; flex: none; }
+.lang-btn {
+  display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px;
+  border-radius: 99px; border: 1px solid var(--line); background: var(--panel); color: var(--fg);
+  cursor: pointer; font-weight: 600; font-size: 13px;
+}
+.lang-btn:hover { border-color: var(--muted); }
+.hero { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 44px; align-items: center; }
+.hero-art { line-height: 0; border-radius: 10px; border: 1px solid var(--line); overflow: hidden;
+  box-shadow: 0 0 0 5px var(--bg-deep), 0 0 0 6px var(--line), 0 24px 70px rgba(227, 19, 55, 0.22); transform: rotate(-2deg); }
+.hero-copy { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.hero-copy h1 { margin: 0; font: 800 clamp(48px, 8vw, 84px)/0.92 var(--f-display); letter-spacing: 0.04em; text-wrap: balance; }
+.hero-copy h1 em { display: block; font-style: normal; font-family: var(--f-body); font-weight: 700; font-size: clamp(18px, 2.6vw, 28px); letter-spacing: 0.18em; color: var(--hive); margin-top: 10px; }
+.hero-copy .lead { margin: 0; font-size: 15px; max-width: 52ch; }
+.start-card { display: grid; gap: 10px; max-width: 460px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+.start-card label { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 0.04em; }
+.start-card input {
+  height: 48px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg-deep); color: var(--fg);
+  padding: 0 14px; font: 500 16px var(--f-body); width: 100%;
+}
+.start-card input:focus { outline: none; border-color: var(--honey); box-shadow: 0 0 0 3px rgba(245, 165, 36, 0.2); }
+.start-card .primary { width: 100%; height: 50px; }
+.hive-login { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; }
+.hive-login[disabled] { opacity: 0.55; cursor: not-allowed; }
+.hive-login small { font-size: 10.5px; border: 1px solid var(--line); border-radius: 99px; padding: 2px 8px; color: var(--muted); font-weight: 600; }
+.note { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
+.home-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.home-grid .col { display: grid; gap: 16px; min-width: 0; }
+.home-grid .box { padding: 18px; }
+.home h2 { margin: 0 0 14px; font: 700 12px/1.2 var(--f-display); letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; }
+.home .keys { border: 0; padding: 0; margin: 0 0 10px; }
+.records { width: 100%; border-collapse: collapse; font-size: 13px; }
+.records th { text-align: left; font-weight: 600; font-size: 11px; color: var(--muted); padding: 0 6px 8px 0; }
+.records td { padding: 7px 6px 7px 0; border-top: 1px solid var(--line); }
+.records td.n { font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.records th.n { white-space: nowrap; }
+.records td.who { max-width: 0; width: 40%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.records tr.latest td { color: var(--honey); }
+.records-wrap { overflow-x: auto; }
+
+/* language menu */
+.sheet.narrow { max-width: 440px; }
+.lang-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 14px 0 16px; }
+.lang-opt {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  min-height: 52px; padding: 0 14px; border-radius: 10px; cursor: pointer;
+  background: var(--bg-deep); border: 1.5px solid var(--line); color: var(--fg); font-size: 15px; font-weight: 600; text-align: left;
+}
+.lang-opt small { font: 500 11px var(--f-mono); color: var(--muted); }
+.lang-opt:hover { border-color: var(--muted); }
+.lang-opt.on { border-color: var(--hive); background: rgba(227, 19, 55, 0.12); }
+.lang-opt span { font-family: var(--lf, inherit); }
+
+/* player chip in game */
+.player { display: flex; align-items: baseline; gap: 6px; min-width: 0; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.player b { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.player small { flex: none; font-size: 10px; color: var(--hbd); border: 1px solid var(--hbd); border-radius: 99px; padding: 0 6px; }
+
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; gap: 20px; }
+  .hero-art { display: none; }
+  .home-grid { grid-template-columns: 1fr; }
+  .player small { display: none; }
+  .player b { font-size: 11px; }
+}
 @media (max-width: 760px) {
   .app { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; padding-block: 10px; }
   .m-hide { display: none !important; }
@@ -354,7 +435,35 @@ kbd {
 </style>
 </head>
 <body>
-<div class="app" id="app">
+<section class="home" id="home">
+  <header class="home-top">
+    <div class="brand"><span class="hexmark" aria-hidden="true"></span><div><b>HIVE</b><small data-i18n="brandSub">方塊鏈</small></div></div>
+    <button class="lang-btn" id="langBtnHome" type="button"></button>
+  </header>
+  <div class="hero">
+    <div class="hero-art"><canvas id="heroCv" aria-hidden="true"></canvas></div>
+    <div class="hero-copy">
+      <h1>HIVE<em data-i18n="brandSub">方塊鏈</em></h1>
+      <p class="lead" data-i18n="lead"></p>
+      <form class="start-card" id="startForm" autocomplete="off">
+        <label for="playerName" data-i18n="playerName">玩家名稱</label>
+        <input id="playerName" name="playerName" maxlength="16" data-i18n-ph="namePh" spellcheck="false">
+        <button class="primary" type="submit" data-i18n="guestPlay">以訪客身分開始</button>
+        <button class="secondary hive-login" type="button" disabled><span data-i18n="hiveLogin">用 Hive 帳號登入</span><small data-i18n="soon">規劃中</small></button>
+        <p class="note" data-i18n="loginNote"></p>
+      </form>
+    </div>
+  </div>
+  <div class="home-grid">
+    <section class="box"><h2 data-i18n="howTo">玩法</h2><ul class="rules" id="homeRules"></ul></section>
+    <div class="col">
+      <section class="box"><h2 data-i18n="controls">操作</h2><div class="keys" id="homeKeys"></div><p class="note" data-i18n="touchHint"></p></section>
+      <section class="box"><h2 data-i18n="records">紀錄</h2><div class="records-wrap" id="records"></div></section>
+    </div>
+  </div>
+</section>
+
+<div class="app" id="app" hidden>
   <aside class="panel left">
     <div class="brand m-hide"><span class="hexmark" aria-hidden="true"></span><div><b>HIVE</b><small data-i18n="brandSub">方塊鏈</small></div></div>
     <section class="box">
@@ -362,6 +471,7 @@ kbd {
       <canvas id="hold" data-i18n-aria="holdAria" aria-label="保留的方塊"></canvas>
     </section>
     <section class="box wallet">
+      <div class="player"><b id="pName"></b><small data-i18n="guest">訪客</small></div>
       <div class="stat big"><label data-i18n="wallet">錢包</label><div class="num"><span id="hive">0.000</span><small>HIVE</small></div></div>
       <div class="stat hbd"><label data-i18n="hbdSavings">HBD 儲蓄</label><div class="num"><span id="hbd">0.000</span><small>HBD</small></div><div class="sub m-hide" id="interest"></div></div>
       <div class="row2">
@@ -450,6 +560,7 @@ kbd {
 
 <div class="overlay" id="overlay"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
 
+<script src="i18n.js"></script>
 <script>
 (() => {
 'use strict';
@@ -476,112 +587,7 @@ const colorOf = t => (PIECES[t] ? PIECES[t].color : GARBAGE);
 
 const ERAS = ['std', 'bee', 'rc', 'air', 'mirror', 'whale', 'rate', 'fast'].map(id => ({ id }));
 
-const I18N = {
-  zh: {
-    brandSub: '方塊鏈', hold: '保留', wallet: '錢包', hbdSavings: 'HBD 儲蓄', lines: '清除列數', combo: '策展連擊',
-    controls: '操作', kMove: '移動', kRotate: '旋轉', kDrop: '軟降 / 硬降', space: '空白', summonBee: '召喚工蜂',
-    kPauseMute: '暫停 / 靜音', kLang: '切換語言', protocol: '協議版本', block: '區塊', next: '下一批交易',
-    rc: '資源點數 RC', feed: '鏈上動態', bee: '工蜂', pause: '暫停', resume: '繼續',
-    soundOn: '音效：開', soundOff: '音效：關', soundOnShort: '♪ 開', soundOffShort: '♪ 關', langSwitch: 'English', langShort: 'EN',
-    padMove: '移動', padRotate: '旋轉', hardDrop: '硬降', softDrop: '軟降', left: '左', right: '右', rotL: '逆轉', rotR: '旋轉',
-    holdAria: '保留的方塊', boardAria: '遊戲盤面', nextAria: '接下來的方塊', empty: '空',
-    interest: '距離派息 {n} 個區塊', interestX2: '距離派息 {n} 個區塊，利率加倍', rcRate: '+{n}/秒', freeze: '重力暫停 {s} 秒',
-    feedWaiting: '開始遊戲後，鏈上事件會出現在這裡。', feedQuiet: '這條鏈目前風平浪靜。',
-    tag_good: '好消息', tag_bad: '壞消息', tag_fork: '硬分叉', tag_info: '',
-    'era.std.name': '標準共識', 'era.std.desc': '一切照常運作。',
-    'era.bee.name': '蜂群時代', 'era.bee.desc': '每 7 個方塊就會送來一隻工蜂。',
-    'era.rc.name': 'RC 緊縮', 'era.rc.desc': '資源點數回復速度減半。',
-    'era.air.name': '空投季', 'era.air.desc': 'HIVE 代幣出現機率變成三倍。',
-    'era.mirror.name': '鏡像分叉', 'era.mirror.desc': '左右操作顛倒，直到下一次硬分叉。',
-    'era.whale.name': '鯨魚出沒', 'era.whale.desc': '鏈上事件更頻繁，鯨魚投票機率提高。',
-    'era.rate.name': 'HBD 升息', 'era.rate.desc': 'HBD 儲蓄利息加倍。',
-    'era.fast.name': '區塊加速', 'era.fast.desc': '下落速度額外提升兩級。',
-    heldT: '本回合已保留過', heldD: '方塊落地後才能再保留',
-    rcLowT: 'RC 不足', rcLowHold: '保留需要 {n} RC，稍等回復', rcLowBee: '召喚工蜂需要 {n} RC',
-    beeQueuedT: '工蜂已在路上', beeQueuedD: '下一個方塊就是工蜂',
-    beeLog: '你廣播了 custom_json，召喚一隻工蜂。下一個方塊會鑽到底部補洞。',
-    beeT: '工蜂出動', beeD: '下一個方塊會鑽到該欄最底下的空格',
-    fFill: '補洞', fFlag: '旗標 {n} 格', fFlagMiss: '炸空了', fTokens: '代幣 x{n}',
-    tetrisT: '鯨魚級清除', tetrisD: '一次 4 列，+{g} HIVE', tetrisLog: '你一次清除 4 列，被 {who} 轉推到熱門。',
-    comboT: '策展連擊 x{n}', comboD: '連續清除帶來額外獎勵',
-    forkT: 'Hardfork {hf} 啟用', forkD: '{name}：{desc}', forkLog: '見證人完成共識，HF{hf} 上線。新時代：{name}。',
-    upT: '鯨魚投票', upEmptyLog: '{who} 給你 100% 鯨魚票，入帳 +{g} HIVE。', upLog: '{who} 給你 100% 鯨魚票，最底下一列被清除。', upD: '底部一列被清除，+{g} HIVE',
-    downT: '反對票', downD: '底部被推入一列垃圾，留了一個缺口', downLog: '{who} 對你投下反對票，底部被推入一列垃圾。',
-    airT: '社群空投', airEmptyLog: '社群空投抵達，你的盤面是空的，直接入帳 +0.500 HIVE。', airLog: '社群空投抵達，{n} 個方塊裡出現了 HIVE 代幣。', airD: '{n} 個方塊變成 HIVE 代幣，清除它們吧',
-    missT: '出塊失敗', missD: '見證人錯過區塊，重力暫停 4 秒', missLog: '見證人 {who} 錯過出塊，重力暫停 4 秒。',
-    swarmT: '蜂群出動', swarmNoneD: '盤面沒有空洞，RC +30', swarmNoneLog: '蜂群巡了一圈沒找到洞，順手送你 30 RC。', swarmD: '補上 {n} 個被蓋住的空洞', swarmLog: '蜂群出動，補上 {n} 個被蓋住的空洞。',
-    rcFullT: 'HP 委託', rcFullD: '{who} 委託了 HP，RC 回滿', rcFullLog: '{who} 委託 HP 給你，RC 回滿。',
-    spamT: '垃圾交易洪水', spamLog: '{who} 發動垃圾交易洪水，你的 RC 被吃掉 40。',
-    interestLog: 'HBD 儲蓄利息入帳 +{g} HBD。', genesisLog: '創世區塊已產出，祝你出塊順利。',
-    pauseT: '鏈已暫停', pauseD: '見證人正在喝咖啡。區塊高度停在 #{h}。', resumeBtn: '繼續出塊', restartBtn: '重新開始',
-    overT: '鏈停止出塊', overD: '方塊堆到最上面，再也塞不進新的交易了。', total: '總資產（1 HBD 計為 1 HIVE）',
-    rWallet: '錢包 HIVE', rHbd: 'HBD 儲蓄', rLines: '清除列數', rHf: '最高協議版本', rCombo: '最高策展連擊', rBlocks: '產出區塊',
-    record: '新的最佳紀錄！', best: '最佳總資產', againBtn: '重新開始',
-    titleSub: '方塊鏈', lead: '每 3 秒產出一個區塊。把交易疊整齊、清除整列，就能把 HIVE 賺進錢包。小心反對票，也別忘了鯨魚。',
-    'rule.coin.t': 'HIVE 代幣', 'rule.coin.d': '清除含代幣的列，額外入帳 HIVE。',
-    'rule.hbd.t': 'HBD 代幣', 'rule.hbd.d': '存進儲蓄，每 20 個區塊派息 5%。',
-    'rule.bee.t': '工蜂', 'rule.bee.d': '落地後鑽到該欄最底下的空格補洞。',
-    'rule.flag.t': '旗標炸彈', 'rule.flag.d': 'HF25 起偶爾出現，炸掉周圍 3×3。',
-    'rule.rc.t': '資源點數 RC', 'rule.rc.d': '保留方塊、召喚工蜂都要花 RC，會隨時間回復。',
-    'rule.fork.t': '硬分叉', 'rule.fork.d': '每清 10 列升級協議，加速並隨機換一個時代規則。',
-    'rule.event.t': '鏈上事件', 'rule.event.d': '鯨魚投票、反對票、空投、出塊失敗隨時發生。',
-    'rule.combo.t': '策展連擊', 'rule.combo.d': '連續落子都有清列，獎勵一路疊加。',
-    kmMove: '移動', kmRot: '旋轉', kmRotL: '逆轉', kmSoft: '軟降', kmHard: '硬降', kmHold: '保留', kmBee: '工蜂', kmPause: '暫停',
-    startBtn: '開始出塊', touchHint: '手機可用下方按鈕操作，點盤面也能旋轉。',
-  },
-  en: {
-    brandSub: 'BLOCK CHAIN', hold: 'Hold', wallet: 'Wallet', hbdSavings: 'HBD savings', lines: 'Lines', combo: 'Curation combo',
-    controls: 'Controls', kMove: 'Move', kRotate: 'Rotate', kDrop: 'Soft / hard drop', space: 'Space', summonBee: 'Summon bee',
-    kPauseMute: 'Pause / mute', kLang: 'Language', protocol: 'Protocol', block: 'Block', next: 'Next transactions',
-    rc: 'Resource Credits', feed: 'Chain activity', bee: 'Bee', pause: 'Pause', resume: 'Resume',
-    soundOn: 'Sound: on', soundOff: 'Sound: off', soundOnShort: '♪ On', soundOffShort: '♪ Off', langSwitch: '中文', langShort: '中文',
-    padMove: 'MOVE', padRotate: 'ROTATE', hardDrop: 'Drop', softDrop: 'Soft', left: 'Left', right: 'Right', rotL: 'Rotate L', rotR: 'Rotate R',
-    holdAria: 'Held piece', boardAria: 'Game board', nextAria: 'Upcoming pieces', empty: 'Empty',
-    interest: 'Interest in {n} blocks', interestX2: 'Interest in {n} blocks, rate doubled', rcRate: '+{n}/s', freeze: 'Gravity paused {s}s',
-    feedWaiting: 'Chain events will show up here once you start.', feedQuiet: 'All quiet on the chain.',
-    tag_good: 'GOOD', tag_bad: 'BAD', tag_fork: 'HARDFORK', tag_info: '',
-    'era.std.name': 'Standard consensus', 'era.std.desc': 'Business as usual.',
-    'era.bee.name': 'Bee season', 'era.bee.desc': 'A worker bee arrives every 7 pieces.',
-    'era.rc.name': 'RC squeeze', 'era.rc.desc': 'Resource Credits refill at half speed.',
-    'era.air.name': 'Airdrop season', 'era.air.desc': 'HIVE tokens show up three times as often.',
-    'era.mirror.name': 'Mirror fork', 'era.mirror.desc': 'Left and right are swapped until the next hardfork.',
-    'era.whale.name': 'Whale sighting', 'era.whale.desc': 'Chain events come faster and whale upvotes are more likely.',
-    'era.rate.name': 'HBD rate hike', 'era.rate.desc': 'HBD savings interest is doubled.',
-    'era.fast.name': 'Fast blocks', 'era.fast.desc': 'Drop speed goes up two extra levels.',
-    heldT: 'Already held', heldD: 'Place a piece before holding again',
-    rcLowT: 'Not enough RC', rcLowHold: 'Hold costs {n} RC. Wait for it to refill', rcLowBee: 'Summoning a bee costs {n} RC',
-    beeQueuedT: 'Bee on the way', beeQueuedD: 'Your next piece is already a bee',
-    beeLog: 'You broadcast a custom_json and summoned a bee. Your next piece burrows down to fill a gap.',
-    beeT: 'Bee summoned', beeD: 'Your next piece burrows to the lowest gap in its column',
-    fFill: 'Filled', fFlag: 'Flag {n} cells', fFlagMiss: 'Missed', fTokens: 'Tokens x{n}',
-    tetrisT: 'Whale clear', tetrisD: '4 lines at once, +{g} HIVE', tetrisLog: 'You cleared 4 lines at once. {who} reblogged it to Trending.',
-    comboT: 'Curation combo x{n}', comboD: 'Back-to-back clears pay a bonus',
-    forkT: 'Hardfork {hf} is live', forkD: '{name}: {desc}', forkLog: 'Witnesses reached consensus and HF{hf} is live. New era: {name}.',
-    upT: 'Whale upvote', upEmptyLog: '{who} gave you a 100% whale upvote: +{g} HIVE.', upLog: '{who} gave you a 100% whale upvote and cleared your bottom row.', upD: 'Bottom row cleared, +{g} HIVE',
-    downT: 'Downvote', downD: 'A garbage row rose from the bottom, with one gap', downLog: '{who} downvoted you. A garbage row was pushed in from the bottom.',
-    airT: 'Community airdrop', airEmptyLog: 'A community airdrop hit an empty board: +0.500 HIVE straight to your wallet.', airLog: 'A community airdrop put HIVE tokens into {n} cells.', airD: '{n} cells now hold HIVE tokens. Clear them',
-    missT: 'Missed block', missD: 'A witness missed a block. Gravity paused for 4 seconds', missLog: 'Witness {who} missed a block. Gravity paused for 4 seconds.',
-    swarmT: 'Bee swarm', swarmNoneD: 'No gaps to fill, RC +30', swarmNoneLog: 'The swarm found no gaps and left you 30 RC instead.', swarmD: 'Filled {n} covered gaps', swarmLog: 'A bee swarm filled {n} covered gaps.',
-    rcFullT: 'HP delegation', rcFullD: '{who} delegated HP. RC is full', rcFullLog: '{who} delegated HP to you. RC is full.',
-    spamT: 'Spam flood', spamLog: '{who} flooded the chain with spam and drained 40 of your RC.',
-    interestLog: 'HBD savings interest paid: +{g} HBD.', genesisLog: 'Genesis block produced. Good luck stacking.',
-    pauseT: 'Chain paused', pauseD: 'The witnesses are on a coffee break. Block height is holding at #{h}.', resumeBtn: 'Resume', restartBtn: 'Restart',
-    overT: 'The chain has halted', overD: 'The stack reached the top and no new transactions fit.', total: 'Net worth (1 HBD counts as 1 HIVE)',
-    rWallet: 'Wallet HIVE', rHbd: 'HBD savings', rLines: 'Lines cleared', rHf: 'Highest protocol', rCombo: 'Best combo', rBlocks: 'Blocks produced',
-    record: 'New personal best!', best: 'Best net worth', againBtn: 'Play again',
-    titleSub: 'BLOCK CHAIN', lead: 'A new block every 3 seconds. Stack transactions, clear full rows and earn HIVE for your wallet. Watch out for downvotes, and keep an eye on the whales.',
-    'rule.coin.t': 'HIVE tokens', 'rule.coin.d': 'Clear a row holding a token for bonus HIVE.',
-    'rule.hbd.t': 'HBD tokens', 'rule.hbd.d': 'Go into savings, which pay 5% every 20 blocks.',
-    'rule.bee.t': 'Worker bee', 'rule.bee.d': 'Burrows to the lowest gap in its column and fills it.',
-    'rule.flag.t': 'Flag bomb', 'rule.flag.d': 'Appears from HF25 on and blasts the 3×3 area around it.',
-    'rule.rc.t': 'Resource Credits', 'rule.rc.d': 'Holding and summoning bees cost RC, which refills over time.',
-    'rule.fork.t': 'Hardforks', 'rule.fork.d': 'Every 10 lines upgrades the protocol, speeds up and rolls a new era rule.',
-    'rule.event.t': 'Chain events', 'rule.event.d': 'Whale upvotes, downvotes, airdrops and missed blocks can happen any time.',
-    'rule.combo.t': 'Curation combo', 'rule.combo.d': 'Clear lines with consecutive pieces to stack up bonuses.',
-    kmMove: 'Move', kmRot: 'Rotate', kmRotL: 'Rotate left', kmSoft: 'Soft drop', kmHard: 'Hard drop', kmHold: 'Hold', kmBee: 'Bee', kmPause: 'Pause',
-    startBtn: 'Start producing', touchHint: 'On a phone, use the buttons under the board. Tapping the board also rotates.',
-  },
-};
+const I18N = window.HT_I18N, LANGS = window.HT_LANGS, CODES = LANGS.map(l => l.code);
 const ACCTS = ['@honey.whale', '@orca.curator', '@hexa.witness', '@bee.keeper', '@drone.queen', '@comb.builder', '@nectar.dao', '@pollen.node'];
 const SPAMMERS = ['@spam.farm', '@bot.army', '@free.airdrop.xyz', '@moon.4u'];
 
@@ -610,9 +616,33 @@ const store = {
   get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } },
 };
-let lang = store.get('hive-tetris-lang') === 'en' ? 'en' : 'zh';
+function detectLang() {
+  const saved = store.get('hive-tetris-lang');
+  if (saved === 'zh') return 'zh-Hant';
+  if (CODES.includes(saved)) return saved;
+  for (const n of (navigator.languages || [navigator.language || 'en'])) {
+    const l = String(n).toLowerCase();
+    if (l.startsWith('zh')) return /hans|cn|sg|my/.test(l) ? 'zh-Hans' : 'zh-Hant';
+    const b = l.split('-')[0];
+    if (CODES.includes(b)) return b;
+  }
+  return 'en';
+}
+let lang = detectLang();
+const escapeHtml = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const GLOBE = '<svg class="globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>';
+const loadedFonts = new Set();
+function ensureFont(code) {
+  const f = (LANGS.find(l => l.code === code) || {}).font;
+  if (!f || loadedFonts.has(f)) return;
+  loadedFonts.add(f);
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = `https://fonts.googleapis.com/css2?family=${f}:wght@400;500;700&display=swap`;
+  document.head.append(link);
+}
 function t(key, p = {}) {
-  const s = I18N[lang][key] ?? I18N.zh[key] ?? key;
+  const s = I18N[lang][key] ?? I18N.en[key] ?? key;
   return s.replace(/\{(\w+)\}/g, (_, k) => (p[k] ?? ''));
 }
 function rotateM(m, dir) {
@@ -1016,8 +1046,9 @@ function payInterest() {
 /* ---------- input ---------- */
 const held = { h: null, down: false };
 function inputDown(a) {
+  if (langOpen) return;
   if (a === 'mute') { toggleMute(); return; }
-  if (a === 'lang') { toggleLang(); return; }
+  if (a === 'lang') { openLangMenu(); return; }
   if (a === 'pause') { togglePause(); return; }
   if (S.state !== 'play') return;
   switch (a) {
@@ -1045,8 +1076,11 @@ const KEYMAP = {
   Space: 'drop', KeyC: 'hold', ShiftLeft: 'hold', ShiftRight: 'hold', KeyB: 'bee', KeyP: 'pause', Escape: 'pause', KeyM: 'mute', KeyL: 'lang',
 };
 addEventListener('keydown', e => {
-  if (e.code === 'KeyL') { e.preventDefault(); if (!e.repeat) toggleLang(); return; }
-  if ((S.state === 'title' || S.state === 'over') && (e.code === 'Enter' || e.code === 'Space')) { e.preventDefault(); startGame(); return; }
+  if (e.target && e.target.matches && e.target.matches('input, textarea, select')) return;
+  if (langOpen) { if (e.code === 'Escape') { e.preventDefault(); closeLangMenu(); } return; }
+  if (e.code === 'KeyL') { e.preventDefault(); if (!e.repeat) openLangMenu(); return; }
+  if (S.state === 'title') return;
+  if (S.state === 'over' && (e.code === 'Enter' || e.code === 'Space')) { e.preventDefault(); startGame(); return; }
   if (S.state === 'pause' && e.code === 'Enter') { e.preventDefault(); togglePause(); return; }
   const a = KEYMAP[e.code];
   if (!a) return;
@@ -1066,26 +1100,56 @@ boardCv.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' && 
 el.beeBtn.addEventListener('click', () => summonBee());
 el.pauseBtn.addEventListener('click', () => togglePause());
 el.muteBtn.addEventListener('click', () => toggleMute());
-$('#langBtn').addEventListener('click', () => toggleLang());
+$('#langBtn').addEventListener('click', () => openLangMenu());
+$('#langBtnHome').addEventListener('click', () => openLangMenu());
+let bodyFont = 'sans-serif';
+const curLang = () => LANGS.find(l => l.code === lang);
 function updateButtons() {
   el.muteBtn.textContent = t(muted ? 'soundOff' : 'soundOn');
   $('#muteBtn2').textContent = t(muted ? 'soundOffShort' : 'soundOnShort');
   el.pauseBtn.textContent = t(S && S.state === 'pause' ? 'resume' : 'pause');
-  $('#langBtn').textContent = t('langSwitch');
-  $('#langBtn2').textContent = t('langShort');
+  $('#langBtn').innerHTML = GLOBE + ' ' + escapeHtml(curLang().name);
+  $('#langBtnHome').innerHTML = GLOBE + '<span>' + escapeHtml(curLang().name) + '</span>';
+  $('#langBtn2').textContent = curLang().short;
+  ['#langBtn', '#langBtnHome', '#langBtn2'].forEach(q => $(q).setAttribute('aria-label', t('langTitle')));
 }
 function applyStatic() {
-  document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
+  document.documentElement.lang = lang;
+  ensureFont(lang);
   document.querySelectorAll('[data-i18n]').forEach(n => { n.textContent = t(n.dataset.i18n); });
   document.querySelectorAll('[data-i18n-aria]').forEach(n => n.setAttribute('aria-label', t(n.dataset.i18nAria)));
+  document.querySelectorAll('[data-i18n-ph]').forEach(n => n.setAttribute('placeholder', t(n.dataset.i18nPh)));
+  bodyFont = getComputedStyle(document.documentElement).getPropertyValue('--f-body').trim() || 'sans-serif';
   updateButtons();
-  if (S) S.feedDirty = true;
+  if (S) { S.feedDirty = true; setText($('#pName'), displayName()); }
+  renderHome();
 }
-function toggleLang() {
-  lang = lang === 'zh' ? 'en' : 'zh';
+function setLang(code) {
+  if (!CODES.includes(code)) return;
+  lang = code;
   store.set('hive-tetris-lang', lang);
   applyStatic();
-  if (!el.overlay.hidden && sheetFn) showSheet(sheetFn);
+}
+let langReturn = null, langOpen = false;
+function langSheet() {
+  return `<h2>${t('langTitle')}</h2>
+    <div class="lang-grid">${LANGS.map(l => `<button type="button" class="lang-opt${l.code === lang ? ' on' : ''}" data-act="setlang" data-lang="${l.code}" lang="${l.code}" aria-pressed="${l.code === lang}"><span>${escapeHtml(l.name)}</span><small>${l.code}</small></button>`).join('')}</div>
+    <div class="actions"><button class="secondary" data-act="closelang" type="button">${t('close')}</button></div>`;
+}
+function openLangMenu() {
+  if (langOpen) return;
+  LANGS.forEach(l => ensureFont(l.code));
+  if (S.state === 'play') togglePause();
+  langReturn = el.overlay.hidden ? null : sheetFn;
+  langOpen = true;
+  showSheet(langSheet, 'narrow');
+  const on = el.sheet.querySelector('.lang-opt.on');
+  if (on) on.focus({ preventScroll: true });
+}
+function closeLangMenu() {
+  langOpen = false;
+  if (langReturn) showSheet(langReturn); else { el.overlay.hidden = true; sheetFn = null; }
+  langReturn = null;
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden && S.state === 'play') togglePause(); });
 function handleHeld(dt) {
@@ -1099,6 +1163,23 @@ function handleHeld(dt) {
 
 /* ---------- game flow ---------- */
 let sheetFn = null;
+const NAME_KEY = 'hive-tetris-name', RUNS_KEY = 'hive-tetris-runs';
+let playerName = (store.get(NAME_KEY) || '').slice(0, 16);
+function cleanName(v) { return String(v || '').replace(/[\u0000-\u001f\u007f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 16); }
+function displayName() { return playerName || t('defaultName'); }
+function loadRuns() {
+  try { const r = JSON.parse(store.get(RUNS_KEY) || '[]'); return Array.isArray(r) ? r : []; } catch (e) { return []; }
+}
+function saveRun(run) {
+  const runs = loadRuns(); runs.push(run);
+  runs.sort((a, b) => b.t - a.t);
+  store.set(RUNS_KEY, JSON.stringify(runs.slice(0, 10)));
+}
+function bestTotal() {
+  const runs = loadRuns();
+  return Math.max(runs.length ? runs[0].t : 0, parseInt(store.get('hive-tetris-best') || '0', 10) || 0);
+}
+let lastRunId = 0;
 function startGame() {
   initAudio();
   S = freshState();
@@ -1107,10 +1188,24 @@ function startGame() {
   fillQueue();
   log('genesisLog', {}, 'info');
   el.overlay.hidden = true; sheetFn = null;
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  $('#home').hidden = true; $('#app').hidden = false;
+  setText($('#pName'), displayName());
+  layout();
   updateButtons();
   sfx('fork');
 }
-function langToggleBtn() { return `<button class="secondary" data-act="lang" type="button">${t('langSwitch')}</button>`; }
+function showHome() {
+  S = freshState();
+  S.board = demoBoard();
+  el.overlay.hidden = true; sheetFn = null;
+  $('#app').hidden = true; $('#home').hidden = false;
+  $('#playerName').value = playerName;
+  renderHome();
+  updateButtons();
+  window.scrollTo(0, 0);
+}
+function langMenuBtn() { return `<button class="secondary" data-act="langmenu" type="button" style="display:inline-flex;align-items:center;gap:6px">${GLOBE}${escapeHtml(curLang().name)}</button>`; }
 function togglePause() {
   if (S.state === 'play') {
     S.state = 'pause'; held.h = null; held.down = false;
@@ -1118,7 +1213,8 @@ function togglePause() {
       <h2>${t('pauseT')}</h2>
       <p class="lead">${t('pauseD', { h: S.height.toLocaleString('en-US') })}</p>
       <div class="actions"><button class="primary" data-act="resume" type="button">${t('resumeBtn')}</button>
-      <button class="secondary" data-act="start" type="button">${t('restartBtn')}</button>${langToggleBtn()}</div>`);
+      <button class="secondary" data-act="start" type="button">${t('restartBtn')}</button>
+      <button class="secondary" data-act="home" type="button">${t('homeBtn')}</button>${langMenuBtn()}</div>`);
   } else if (S.state === 'pause') {
     S.state = 'play'; el.overlay.hidden = true; sheetFn = null;
   }
@@ -1129,13 +1225,16 @@ function gameOver() {
   S.state = 'over'; S.cur = null;
   sfx('over');
   const total = S.hive + S.hbd;
-  const best = parseInt(store.get('hive-tetris-best') || '0', 10) || 0;
+  const best = bestTotal();
   const record = total > best;
+  lastRunId = Date.now();
+  saveRun({ id: lastRunId, n: playerName, g: 1, t: total, l: S.lines, h: S.hfMax, d: lastRunId });
   if (record) store.set('hive-tetris-best', String(total));
   const g = S;
-  setTimeout(() => showSheet(() => `
+  setTimeout(() => { if (S === g && S.state === 'over') showSheet(() => `
     <h2>${t('overT')}</h2>
     <p class="lead">${t('overD')}</p>
+    <p class="best">${t('playingAs')} <b>${escapeHtml(displayName())}</b> · ${t('guest')}</p>
     <dl class="result">
       <div class="total"><dt>${t('total')}</dt><dd>${fmt3(total)}</dd></div>
       <div><dt>${t('rWallet')}</dt><dd>${fmt3(g.hive)}</dd></div>
@@ -1146,10 +1245,12 @@ function gameOver() {
       <div><dt>${t('rBlocks')}</dt><dd>${g.blocks}</dd></div>
     </dl>
     ${record ? `<p class="record">${t('record')}</p>` : `<p class="best">${t('best')} <b>${fmt3(best)}</b></p><p></p>`}
-    <div class="actions"><button class="primary" data-act="start" type="button">${t('againBtn')}</button>${langToggleBtn()}</div>`), 700);
+    <div class="actions"><button class="primary" data-act="start" type="button">${t('againBtn')}</button>
+    <button class="secondary" data-act="home" type="button">${t('homeBtn')}</button>${langMenuBtn()}</div>`); }, 700);
 }
-function showSheet(fn) {
+function showSheet(fn, cls = '') {
   sheetFn = fn;
+  el.sheet.className = 'sheet' + (cls ? ' ' + cls : '');
   el.sheet.innerHTML = fn();
   el.overlay.hidden = false;
   paintIcons();
@@ -1159,35 +1260,61 @@ function showSheet(fn) {
 el.sheet.addEventListener('click', e => {
   const b = e.target.closest('button[data-act]');
   if (!b) return;
-  if (b.dataset.act === 'start') startGame();
-  if (b.dataset.act === 'resume') togglePause();
-  if (b.dataset.act === 'lang') toggleLang();
+  const act = b.dataset.act;
+  if (act === 'setlang') { setLang(b.dataset.lang); closeLangMenu(); return; }
+  if (act === 'closelang') { closeLangMenu(); return; }
+  if (act === 'langmenu') { openLangMenu(); return; }
+  if (act === 'start') startGame();
+  if (act === 'resume') togglePause();
+  if (act === 'home') showHome();
 });
-function showTitle() {
-  const rule = (icon, k) => `<li>${icon}<div><b>${t(`rule.${k}.t`)}</b>${t(`rule.${k}.d`)}</div></li>`;
-  showSheet(() => {
-    const best = parseInt(store.get('hive-tetris-best') || '0', 10) || 0;
-    return `
-    <div class="logo"><span class="hexmark" aria-hidden="true"></span><h1>HIVE<em>${t('titleSub')}</em></h1></div>
-    <p class="lead">${t('lead')}</p>
-    <ul class="rules">
-      ${rule('<canvas data-icon="coin"></canvas>', 'coin')}
-      ${rule('<canvas data-icon="hbd"></canvas>', 'hbd')}
-      ${rule('<canvas data-icon="bee"></canvas>', 'bee')}
-      ${rule('<canvas data-icon="flag"></canvas>', 'flag')}
-      ${rule('<span class="ico rc"></span>', 'rc')}
-      ${rule('<span class="ico fork"></span>', 'fork')}
-      ${rule('<canvas data-icon="garbage"></canvas>', 'event')}
-      ${rule('<canvas data-icon="combo"></canvas>', 'combo')}
-    </ul>
-    <div class="keys">
-      <span><kbd>←</kbd><kbd>→</kbd> ${t('kmMove')}</span><span><kbd>↑</kbd><kbd>X</kbd> ${t('kmRot')}</span><span><kbd>Z</kbd> ${t('kmRotL')}</span>
-      <span><kbd>↓</kbd> ${t('kmSoft')}</span><span><kbd>${t('space')}</kbd> ${t('kmHard')}</span><span><kbd>C</kbd> ${t('kmHold')}</span>
-      <span><kbd>B</kbd> ${t('kmBee')}</span><span><kbd>P</kbd> ${t('kmPause')}</span><span><kbd>L</kbd> ${t('kLang')}</span>
-    </div>
-    <div class="actions"><button class="primary" data-act="start" type="button">${t('startBtn')}</button>${langToggleBtn()}
-    <p class="best">${best ? `${t('best')} <b>${fmt3(best)}</b>` : t('touchHint')}</p></div>`;
-  });
+el.overlay.addEventListener('click', e => { if (e.target === el.overlay && langOpen) closeLangMenu(); });
+$('#startForm').addEventListener('submit', e => {
+  e.preventDefault();
+  playerName = cleanName($('#playerName').value);
+  $('#playerName').value = playerName;
+  store.set(NAME_KEY, playerName);
+  startGame();
+});
+const RULES = [['coin', 'canvas'], ['hbd', 'canvas'], ['bee', 'canvas'], ['flag', 'canvas'], ['rc', 'rc'], ['fork', 'fork'], ['event', 'garbage'], ['combo', 'combo']];
+function renderHome() {
+  if (!$('#homeRules')) return;
+  $('#homeRules').innerHTML = RULES.map(([k, ic]) => {
+    const icon = ic === 'rc' ? '<span class="ico rc"></span>' : ic === 'fork' ? '<span class="ico fork"></span>' : `<canvas data-icon="${ic === 'canvas' ? k : ic}"></canvas>`;
+    return `<li>${icon}<div><b>${t(`rule.${k}.t`)}</b>${t(`rule.${k}.d`)}</div></li>`;
+  }).join('');
+  $('#homeKeys').innerHTML = `
+    <span><kbd>←</kbd><kbd>→</kbd> ${t('kmMove')}</span><span><kbd>↑</kbd><kbd>X</kbd> ${t('kmRot')}</span><span><kbd>Z</kbd> ${t('kmRotL')}</span>
+    <span><kbd>↓</kbd> ${t('kmSoft')}</span><span><kbd>${t('space')}</kbd> ${t('kmHard')}</span><span><kbd>C</kbd> ${t('kmHold')}</span>
+    <span><kbd>B</kbd> ${t('kmBee')}</span><span><kbd>P</kbd> ${t('kmPause')}</span><span><kbd>L</kbd> ${t('kLang')}</span>`;
+  const runs = loadRuns();
+  if (!runs.length) $('#records').innerHTML = `<p class="note">${t('noRecords')}</p>`;
+  else {
+    let df;
+    try { df = new Intl.DateTimeFormat(lang, { month: 'short', day: 'numeric' }); } catch (e) { df = null; }
+    $('#records').innerHTML = `<table class="records"><thead><tr><th>${t('colName')}</th><th class="n">${t('colScore')}</th><th class="n">${t('colLines')}</th><th class="n">${t('colHf')}</th><th class="n">${t('colDate')}</th></tr></thead><tbody>${
+      runs.map(r => `<tr class="${r.id === lastRunId ? 'latest' : ''}"><td class="who">${escapeHtml(r.n || t('defaultName'))}</td><td class="n">${fmt3(r.t)}</td><td class="n">${r.l}</td><td class="n">${r.h}</td><td class="n">${df ? df.format(new Date(r.d)) : ''}</td></tr>`).join('')
+    }</tbody></table>`;
+  }
+  paintIconsIn($('#homeRules'));
+  drawHero();
+}
+function drawHero() {
+  const cv = $('#heroCv');
+  if (!cv || $('#home').hidden || getComputedStyle(cv.parentElement).display === 'none') return;
+  const s = 24, rows = 14;
+  sizeCanvas(cv, s * COLS, s * rows);
+  const c = cv.getContext('2d');
+  c.fillStyle = '#12070c'; c.fillRect(0, 0, s * COLS, s * rows);
+  c.strokeStyle = 'rgba(255,255,255,0.035)';
+  for (let x = 1; x < COLS; x++) { c.beginPath(); c.moveTo(x * s + 0.5, 0); c.lineTo(x * s + 0.5, s * rows); c.stroke(); }
+  const art = [
+    '..........', '..........', '....TTT...', '.....T....', '..........', '..........',
+    '.........B', 'L.......OO', 'LJJ..Z..OO', 'LLJ.ZZSS.I', 'IIJ.ZSSLLI', 'OOTTT.LJJI', 'OOSTLLLJ.I', 'ZZSSTJJJBI',
+  ];
+  const tokens = { '9,12': 'coin', '1,11': 'hbd', '6,10': 'coin' };
+  art.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.') drawCell(c, x * s, y * s, s, ch, tokens[x + ',' + y] || null); }));
+  [[4, 8], [5, 8], [6, 8], [5, 9]].forEach(([x, y]) => drawOutline(c, x * s, y * s, s, PIECES.T.color));
 }
 function demoBoard() {
   const b = newBoard(), types = 'IOTSZJL';
@@ -1273,7 +1400,7 @@ function layout() {
   sizeCanvas(holdCv, pcs * 4.6, pcs * 3);
   sizeCanvas(nextCv, pcs * 4.6, pcs * (mobile ? 6.6 : 9.6));
 }
-addEventListener('resize', layout);
+addEventListener('resize', () => { layout(); drawHero(); });
 
 function shadeHex(hex, amt) {
   const n = parseInt(hex.slice(1), 16);
@@ -1401,7 +1528,7 @@ function render() {
   c.textAlign = 'center'; c.textBaseline = 'middle';
   for (const f of S.fx) {
     c.globalAlpha = Math.min(1, f.life / 400);
-    c.font = `800 ${Math.round(cs * 0.62)}px Oxanium, "Noto Sans TC", sans-serif`;
+    c.font = `800 ${Math.round(cs * 0.62)}px Oxanium, ${bodyFont}`;
     c.lineWidth = 4; c.strokeStyle = 'rgba(18,7,12,0.85)';
     c.strokeText(f.text, f.x * cs, f.y * cs); c.fillStyle = f.color; c.fillText(f.text, f.x * cs, f.y * cs);
   }
@@ -1411,7 +1538,7 @@ function render() {
   const hw = holdCv.width / dpr, hh = holdCv.height / dpr;
   hctx.clearRect(0, 0, hw, hh);
   if (S.hold) drawPreview(hctx, S.hold, hw / 2, hh / 2, pcs, S.canHold ? 1 : 0.35);
-  else { hctx.fillStyle = '#6e5560'; hctx.font = `500 ${Math.max(10, pcs * 0.62)}px "Noto Sans TC", sans-serif`; hctx.textAlign = 'center'; hctx.textBaseline = 'middle'; hctx.fillText(t('empty'), hw / 2, hh / 2); }
+  else { hctx.fillStyle = '#6e5560'; hctx.font = `500 ${Math.max(10, pcs * 0.62)}px ${bodyFont}`; hctx.textAlign = 'center'; hctx.textBaseline = 'middle'; hctx.fillText(t('empty'), hw / 2, hh / 2); }
   // next
   const nw = nextCv.width / dpr, nh = nextCv.height / dpr;
   nctx.clearRect(0, 0, nw, nh);
@@ -1448,8 +1575,9 @@ function hud() {
   el.beeBtn.disabled = S.state !== 'play' || S.rc < BEE_COST;
   renderFeed();
 }
-function paintIcons() {
-  el.sheet.querySelectorAll('canvas[data-icon]').forEach(cv => {
+function paintIcons() { paintIconsIn(el.sheet); }
+function paintIconsIn(root) {
+  root.querySelectorAll('canvas[data-icon]').forEach(cv => {
     sizeCanvas(cv, 26, 26);
     const c = cv.getContext('2d'), k = cv.dataset.icon;
     if (k === 'coin') drawCell(c, 1, 1, 24, 'I', 'coin');
@@ -1473,10 +1601,10 @@ function frame(now) {
 
 S = freshState();
 S.board = demoBoard();
-S.hold = makeQ('T');
 applyStatic();
 layout();
-showTitle();
+showHome();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { bodyFont = getComputedStyle(document.documentElement).getPropertyValue('--f-body').trim() || bodyFont; drawHero(); });
 requestAnimationFrame(layout);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
 requestAnimationFrame(frame);
