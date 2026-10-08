@@ -469,7 +469,7 @@ kbd {
       <section class="box"><h2 data-i18n="records">紀錄</h2><div class="records-wrap" id="records"></div></section>
     </div>
   </div>
-  <footer class="home-foot"><span data-i18n="beta"></span> <a href="https://github.com/d-bot-2026/Claude/issues/new" target="_blank" rel="noopener" data-i18n="feedback"></a></footer>
+  <footer class="home-foot"><span data-i18n="beta"></span> <a href="https://github.com/d-bot-2026/Claude/issues/new" target="_blank" rel="noopener" data-i18n="feedback"></a><span id="privacyNote" data-i18n="privacy" hidden></span></footer>
 </section>
 
 <div class="app" id="app" hidden>
@@ -1130,6 +1130,7 @@ function applyStatic() {
 }
 function setLang(code) {
   if (!CODES.includes(code)) return;
+  if (code !== lang) track('lang-' + code, 'Language: ' + code);
   lang = code;
   store.set('hive-tetris-lang', lang);
   applyStatic();
@@ -1186,6 +1187,7 @@ function bestTotal() {
 }
 let lastRunId = 0;
 function startGame() {
+  track('game-start', 'Game started');
   initAudio();
   S = freshState();
   S.state = 'play';
@@ -1229,6 +1231,7 @@ function gameOver() {
   if (S.state === 'over') return;
   S.state = 'over'; S.cur = null;
   sfx('over');
+  track('game-over', `Game over: ${S.lines} lines, HF${S.hfMax}`);
   const total = S.hive + S.hbd;
   const best = bestTotal();
   const record = total > best;
@@ -1595,6 +1598,26 @@ function paintIconsIn(root) {
   });
 }
 
+/* ---------- analytics (GoatCounter, cookie-free) ----------
+   Fill in the GoatCounter site code to switch it on, e.g. 'hive-block-producer' for
+   https://hive-block-producer.goatcounter.com. It only runs on the public site, never locally or in previews. */
+const GOATCOUNTER_CODE = '';
+const ANALYTICS_HOSTS = ['d-bot-2026.github.io'];
+const analyticsOn = !!GOATCOUNTER_CODE && ANALYTICS_HOSTS.includes(location.hostname);
+function initAnalytics() {
+  if (!analyticsOn) return;
+  const sc = document.createElement('script');
+  sc.async = true;
+  sc.src = 'https://gc.zgo.at/count.js';
+  sc.dataset.goatcounter = `https://${GOATCOUNTER_CODE}.goatcounter.com/count`;
+  document.head.append(sc);
+  $('#privacyNote').hidden = false;
+}
+function track(path, title) {
+  if (!analyticsOn) return;
+  try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path, title, event: true }); } catch (e) { /* analytics must never break the game */ }
+}
+
 /* ---------- loop ---------- */
 let last = performance.now();
 function frame(now) {
@@ -1607,6 +1630,7 @@ function frame(now) {
 
 S = freshState();
 S.board = demoBoard();
+initAnalytics();
 applyStatic();
 layout();
 showHome();

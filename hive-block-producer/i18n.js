@@ -15,6 +15,7 @@ window.HT_LANGS = [
 window.HT_I18N = {
   /* ------------------------------------------------------------------ English */
   en: {
+    privacy: 'This site counts visits anonymously with GoatCounter. No cookies, no personal data.',
     disclaimer: 'All HIVE, HBD, HP and RC in this game are play points only. They are not real cryptocurrency, have no value and cannot be withdrawn or exchanged.',
     beta: 'Test build. Thanks for playing and sharing feedback.', feedback: 'Send feedback (GitHub)',
     hold: 'Hold', wallet: 'Wallet', hbdSavings: 'HBD savings', lines: 'Lines', combo: 'Curation combo',
@@ -78,6 +79,7 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ Español */
   es: {
+    privacy: 'Este sitio cuenta las visitas de forma anónima con GoatCounter. Sin cookies ni datos personales.',
     disclaimer: 'Todos los HIVE, HBD, HP y RC de este juego son solo puntos de juego. No son criptomonedas reales, no tienen valor y no se pueden retirar ni canjear.',
     beta: 'Versión de prueba. Gracias por jugar y darnos tu opinión.', feedback: 'Enviar comentarios (GitHub)',
     hold: 'Guardar', wallet: 'Billetera', hbdSavings: 'Ahorros HBD', lines: 'Líneas', combo: 'Combo de curación',
@@ -141,6 +143,7 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ Français */
   fr: {
+    privacy: 'Ce site compte les visites de façon anonyme avec GoatCounter. Pas de cookies, aucune donnée personnelle.',
     disclaimer: 'Les HIVE, HBD, HP et RC de ce jeu sont de simples points de jeu. Ce ne sont pas de vraies cryptomonnaies : ils n’ont aucune valeur et ne peuvent être ni retirés ni échangés.',
     beta: 'Version de test. Merci de jouer et de donner ton avis.', feedback: 'Donner ton avis (GitHub)',
     hold: 'Réserve', wallet: 'Portefeuille', hbdSavings: 'Épargne HBD', lines: 'Lignes', combo: 'Combo curation',
@@ -204,6 +207,7 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ 繁體中文 */
   'zh-Hant': {
+    privacy: '本站使用 GoatCounter 匿名統計拜訪次數，不使用 Cookie，也不收集個人資料。',
     disclaimer: '遊戲中的 HIVE、HBD、HP 與 RC 都只是遊戲點數，不是真實的加密貨幣，沒有任何價值，也無法提領或兌換。',
     beta: '測試版，歡迎試玩並提供意見。', feedback: '回報意見（GitHub）',
     hold: '保留', wallet: '錢包', hbdSavings: 'HBD 儲蓄', lines: '清除列數', combo: '策展連擊',
@@ -267,6 +271,7 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ 简体中文 */
   'zh-Hans': {
+    privacy: '本站使用 GoatCounter 匿名统计访问次数，不使用 Cookie，也不收集个人信息。',
     disclaimer: '游戏中的 HIVE、HBD、HP 和 RC 都只是游戏积分，不是真实的加密货币，没有任何价值，也无法提取或兑换。',
     beta: '测试版，欢迎试玩并提出意见。', feedback: '反馈意见（GitHub）',
     hold: '暂存', wallet: '钱包', hbdSavings: 'HBD 储蓄', lines: '消除行数', combo: '策展连击',
@@ -330,6 +335,7 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ 日本語 */
   ja: {
+    privacy: 'このサイトは GoatCounter で訪問数を匿名で集計しています。Cookie や個人情報は使いません。',
     disclaimer: 'ゲーム内の HIVE・HBD・HP・RC はすべてゲーム用のポイントです。本物の暗号資産ではなく、価値はなく、出金や交換もできません。',
     beta: 'テスト版です。遊んで感想を聞かせてください。', feedback: 'フィードバックを送る（GitHub）',
     hold: 'ホールド', wallet: 'ウォレット', hbdSavings: 'HBD 貯蓄', lines: 'ライン', combo: 'キュレーション連鎖',
@@ -393,6 +399,7 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ 한국어 */
   ko: {
+    privacy: '이 사이트는 GoatCounter로 방문 수를 익명으로 집계해요. 쿠키나 개인정보는 쓰지 않아요.',
     disclaimer: '게임 속 HIVE, HBD, HP, RC는 모두 게임용 포인트예요. 실제 암호화폐가 아니며 가치가 없고 출금하거나 교환할 수 없어요.',
     beta: '테스트 버전이에요. 플레이하고 의견을 들려주세요.', feedback: '의견 보내기 (GitHub)',
     hold: '홀드', wallet: '지갑', hbdSavings: 'HBD 저축', lines: '줄', combo: '큐레이션 콤보',
@@ -456,6 +463,7 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ हिन्दी */
   hi: {
+    privacy: 'यह साइट GoatCounter से विज़िट गुमनाम रूप से गिनती है। कोई कुकी या निजी जानकारी नहीं ली जाती।',
     disclaimer: 'इस खेल के सभी HIVE, HBD, HP और RC सिर्फ़ खेल के अंक हैं। ये असली क्रिप्टोकरेंसी नहीं हैं, इनका कोई मूल्य नहीं है और इन्हें निकाला या बदला नहीं जा सकता।',
     beta: 'यह टेस्ट संस्करण है। खेलकर अपनी राय ज़रूर बताइए।', feedback: 'राय भेजें (GitHub)',
     hold: 'होल्ड', wallet: 'वॉलेट', hbdSavings: 'HBD बचत', lines: 'लाइनें', combo: 'क्यूरेशन कॉम्बो',
