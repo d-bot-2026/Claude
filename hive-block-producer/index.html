@@ -1601,7 +1601,7 @@ function paintIconsIn(root) {
 /* ---------- analytics (GoatCounter, cookie-free) ----------
    Fill in the GoatCounter site code to switch it on, e.g. 'hive-block-producer' for
    https://hive-block-producer.goatcounter.com. It only runs on the public site, never locally or in previews. */
-const GOATCOUNTER_CODE = '';
+const GOATCOUNTER_CODE = 'hive-block-producer';
 const ANALYTICS_HOSTS = ['d-bot-2026.github.io'];
 const analyticsOn = !!GOATCOUNTER_CODE && ANALYTICS_HOSTS.includes(location.hostname);
 function initAnalytics() {
