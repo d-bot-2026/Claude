@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Hive Block Producer</title>
-<meta name="description" content="A Hive-themed falling-block puzzle game: stack transactions, survive hardforks, dodge downvotes and earn HIVE.">
+<meta name="description" content="A Hive-themed falling-block puzzle game: stack transactions, survive hardforks and dodge downvotes. All in-game HIVE, HBD and RC are play points with no real value.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#170a10">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 115'%3E%3Cpath d='M50 0l50 29v57l-50 29L0 86V29z' fill='%23e31337'/%3E%3Cpath d='M30 30h16l24 27-24 28H30l24-28z' fill='%23170a10'/%3E%3C/svg%3E">
@@ -371,6 +371,7 @@ kbd {
 .hive-login small { font-size: 10.5px; border: 1px solid var(--line); border-radius: 99px; padding: 2px 8px; color: var(--muted); font-weight: 600; }
 .home-foot { display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
 .home-foot a { color: var(--honey); }
+.disclaimer { margin: 0; max-width: 60ch; font-size: 12px; line-height: 1.5; color: var(--muted); background: var(--bg-deep); border: 1px dashed var(--line); border-radius: 8px; padding: 8px 12px; }
 .note { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
 .home-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; }
 .home-grid .col { display: grid; gap: 16px; min-width: 0; }
@@ -451,6 +452,7 @@ kbd {
     <div class="hero-copy">
       <h1>HIVE<em>BLOCK PRODUCER</em></h1>
       <p class="lead" data-i18n="lead"></p>
+      <p class="disclaimer" data-i18n="disclaimer"></p>
       <form class="start-card" id="startForm" autocomplete="off">
         <label for="playerName" data-i18n="playerName">玩家名稱</label>
         <input id="playerName" name="playerName" maxlength="16" data-i18n-ph="namePh" spellcheck="false">
@@ -627,12 +629,7 @@ function detectLang() {
   const saved = store.get('hive-tetris-lang');
   if (saved === 'zh') return 'zh-Hant';
   if (CODES.includes(saved)) return saved;
-  for (const n of (navigator.languages || [navigator.language || 'en'])) {
-    const l = String(n).toLowerCase();
-    if (l.startsWith('zh')) return /hans|cn|sg|my/.test(l) ? 'zh-Hans' : 'zh-Hant';
-    const b = l.split('-')[0];
-    if (CODES.includes(b)) return b;
-  }
+  // first-time visitors always start in English; their own choice is remembered afterwards
   return 'en';
 }
 let lang = detectLang();
@@ -1252,6 +1249,7 @@ function gameOver() {
       <div><dt>${t('rCombo')}</dt><dd>x${Math.max(0, g.maxCombo)}</dd></div>
       <div><dt>${t('rBlocks')}</dt><dd>${g.blocks}</dd></div>
     </dl>
+    <p class="disclaimer" style="margin-bottom:14px">${t('disclaimer')}</p>
     ${record ? `<p class="record">${t('record')}</p>` : `<p class="best">${t('best')} <b>${fmt3(best)}</b></p><p></p>`}
     <div class="actions"><button class="primary" data-act="start" type="button">${t('againBtn')}</button>
     <button class="secondary" data-act="home" type="button">${t('homeBtn')}</button>${langMenuBtn()}</div>`); }, 700);
