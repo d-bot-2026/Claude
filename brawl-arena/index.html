@@ -26,7 +26,7 @@
 html, body { height: 100%; margin: 0; overflow: hidden; background: var(--sky-deep); color: var(--paper); font-family: var(--body); }
 [hidden] { display: none !important; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-canvas#game { position: fixed; inset: 0; display: block; touch-action: none; user-select: none; -webkit-user-select: none; }
+canvas#game { position: fixed; left: 0; top: 0; width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; }
 .stroke { -webkit-text-stroke: 0.09em var(--ink); paint-order: stroke fill; text-shadow: 0 0.09em 0 var(--ink); }
 
 .overlay {
@@ -44,7 +44,7 @@ canvas#game { position: fixed; inset: 0; display: block; touch-action: none; use
 .pill svg { width: 30px; height: 30px; }
 .lobby-main { flex: 1; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; align-items: center; max-width: 1080px; width: 100%; margin: 0 auto; }
 .stage { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
-#preview { width: min(300px, 70vw, 42vh); aspect-ratio: 1; max-width: 100%; }
+#preview { width: min(300px, 70vw, 30vh); aspect-ratio: 1; max-width: 100%; }
 .bname { font-family: var(--display); font-size: clamp(28px, 4.4vw, 44px); line-height: 1; text-align: center; }
 .brole { font-size: 14px; letter-spacing: 0.2em; color: #cfe1ff; }
 .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; width: 100%; max-width: 420px; margin: 6px 0 0; }
@@ -101,6 +101,7 @@ canvas#game { position: fixed; inset: 0; display: block; touch-action: none; use
 <div id="hudbar" hidden>
   <button class="mini" id="quit" type="button">離開</button>
   <button class="mini" id="mute" type="button">音效 開</button>
+  <button class="mini" id="zoom" type="button">視野 標準</button>
 </div>
 
 <div id="lobby" class="overlay">
@@ -642,16 +643,16 @@ function land(e) {
 
 // ---------- 輸入 ----------
 const keys = {};
-const STICK_R = 58;
+let STICK_R = 58, U = 1;
 const sticks = { move: { id: null }, attack: { id: null }, super: { id: null } };
 let mouse = { x: 0, y: 0, btn: -1 }, touchMode = matchMedia('(pointer: coarse)').matches;
 function resetInput() { for (const k in keys) keys[k] = false; for (const s of Object.values(sticks)) s.id = null; mouse.btn = -1; }
 function layout() {
-  const pad = 24;
+  const pad = 20 * U;
   return {
-    moveHome: { x: pad + 80, y: H - pad - 80 },
-    attack: { x: W - pad - 76, y: H - pad - 82 },
-    super: { x: W - pad - 190, y: H - pad - 48 - (H < 500 ? 12 : 40) }
+    moveHome: { x: pad + 80 * U, y: H - pad - 80 * U },
+    attack: { x: W - pad - 76 * U, y: H - pad - 82 * U },
+    super: { x: W - pad - 190 * U, y: H - pad - (H < 500 ? 60 : 88) * U }
   };
 }
 function currentAim() {
@@ -694,7 +695,7 @@ function cvInit() {
     const L = layout(), x = e.clientX, y = e.clientY;
     cv.setPointerCapture?.(e.pointerId);
     const start = s => { s.id = e.pointerId; s.ox = x; s.oy = y; s.cx = x; s.cy = y; };
-    if (sticks.super.id == null && player.superCharge >= 1 && hyp(x - L.super.x, y - L.super.y) < 60) { start(sticks.super); sticks.super.ox = L.super.x; sticks.super.oy = L.super.y; }
+    if (sticks.super.id == null && player.superCharge >= 1 && hyp(x - L.super.x, y - L.super.y) < 60 * U) { start(sticks.super); sticks.super.ox = L.super.x; sticks.super.oy = L.super.y; }
     else if (x < W * 0.5 && sticks.move.id == null) start(sticks.move);
     else if (x >= W * 0.5 && sticks.attack.id == null) { start(sticks.attack); if (hyp(x - L.attack.x, y - L.attack.y) < STICK_R * 1.3) { sticks.attack.ox = L.attack.x; sticks.attack.oy = L.attack.y; } }
   });
@@ -732,11 +733,16 @@ addEventListener('blur', resetInput);
 // ---------- 繪圖 ----------
 const cv = document.getElementById('game'), ctx = cv.getContext('2d');
 let W = 0, H = 0, DPR = 1, S = 40;
+const ZOOMS = [{ k: 1, label: '標準' }, { k: 0.82, label: '遠' }, { k: 0.68, label: '最遠' }];
+let zoomIdx = clamp(store.get('zoom', 0) | 0, 0, ZOOMS.length - 1);
 const cam = { x: C, y: C };
 function resize() {
   DPR = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
   cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
-  S = Math.max(W, H) / 19; if (Math.min(W, H) / S < 9) S = Math.min(W, H) / 9;
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  // 視野：大約看到 230 格面積，短邊至少 11 格；視野按鈕可再拉遠
+  S = Math.min(Math.sqrt(W * H / 230), Math.min(W, H) / 11) * ZOOMS[zoomIdx].k;
+  U = clamp(Math.min(W, H) / 430, 0.62, 1.15); STICK_R = 58 * U;
 }
 addEventListener('resize', resize); resize();
 
@@ -978,21 +984,23 @@ function drawLabel(e, px, py) {
 function drawStick(x, y, kx, ky, col, label, active, dim) {
   ctx.save(); ctx.globalAlpha = dim ? 0.45 : 1;
   ctx.beginPath(); ctx.arc(x, y, STICK_R, 0, TAU); ctx.fillStyle = 'rgba(10,20,60,0.35)'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.stroke();
-  ctx.beginPath(); ctx.arc(kx, ky, active ? 30 : 34, 0, TAU); ctx.fillStyle = col; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
+  ctx.beginPath(); ctx.arc(kx, ky, (active ? 30 : 34) * U, 0, TAU); ctx.fillStyle = col; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
   if (label) txt(ctx, label, kx, ky, 15, '#ffffff');
   ctx.restore();
 }
 function drawHud() {
   const alive = ents.filter(e => e.alive).length;
-  const cx = W / 2, ty = 34;
+  const cx = W / 2, ty = W < 560 ? 76 : 34;
+  ctx.save(); ctx.translate(cx, 0); ctx.scale(U, U); ctx.translate(-cx, 0);
   rr(ctx, cx - 78, ty - 20, 156, 40, 20); ctx.fillStyle = 'rgba(10,22,70,0.75)'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
   ctx.beginPath(); ctx.arc(cx - 50, ty, 12, 0, TAU); ctx.fillStyle = '#e9fff0'; ctx.fill(); ctx.lineWidth = 2.5; ctx.stroke();
   ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(cx - 54.5, ty - 1, 3.2, 0, TAU); ctx.arc(cx - 45.5, ty - 1, 3.2, 0, TAU); ctx.fill();
   txt(ctx, `剩餘 ${alive}`, cx + 10, ty + 1, 22, '#ffffff');
-  if (gameT > GAS_START - 6 && gameT < GAS_START + 3) txt(ctx, gameT < GAS_START ? `毒霧 ${Math.ceil(GAS_START - gameT)} 秒後出現` : '毒霧逼近！', cx, ty + 40, 18, '#7dff8f');
-  feed.forEach((f, i) => { const a = clamp(1 - (T - f.t - 4), 0, 1); if (a <= 0) return; ctx.globalAlpha = a; txt(ctx, f.txt, W - 16, 30 + i * 24, 15, f.me ? '#ffd23f' : '#ffffff', 'right'); });
+  if (player.cubes) { drawCubeIcon(cx + 98, ty, 13); txt(ctx, String(player.cubes), cx + 120, ty + 1, 20, '#ffffff', 'left'); }
+  ctx.restore();
+  if (gameT > GAS_START - 6 && gameT < GAS_START + 3) txt(ctx, gameT < GAS_START ? `毒霧 ${Math.ceil(GAS_START - gameT)} 秒後出現` : '毒霧逼近！', cx, ty + 40 * U, Math.round(18 * U), '#7dff8f');
+  feed.forEach((f, i) => { const a = clamp(1 - (T - f.t - 4), 0, 1); if (a <= 0) return; ctx.globalAlpha = a; txt(ctx, f.txt, W - 16, (W < 700 ? 90 : 30) * U + i * 22 * U, Math.round(15 * U), f.me ? '#ffd23f' : '#ffffff', 'right'); });
   ctx.globalAlpha = 1;
-  if (player.cubes) { drawCubeIcon(W / 2 + 98, ty, 13); txt(ctx, String(player.cubes), W / 2 + 120, ty + 1, 20, '#ffffff', 'left'); }
 
   if (state === 'play' && player.alive) {
     const L = layout();
@@ -1007,21 +1015,21 @@ function drawHud() {
     const su = sticks.super, ready = player.superCharge >= 1, sxp = L.super.x, syp = L.super.y;
     if (su.id != null) { const vx = su.cx - su.ox, vy = su.cy - su.oy, l = hyp(vx, vy), k = l > STICK_R ? STICK_R / l : 1; drawStick(su.ox, su.oy, su.ox + vx * k, su.oy + vy * k, '#ffcf2e', '', true); }
     else {
-      const r = touchMode ? 34 : 28, bx = touchMode ? sxp : W - 60, by = touchMode ? syp : H - 60;
+      const r = (touchMode ? 34 : 28) * U, bx = touchMode ? sxp : W - 60 * U, by = touchMode ? syp : H - 60 * U;
       ctx.beginPath(); ctx.arc(bx, by, r, 0, TAU); ctx.fillStyle = ready ? '#ffcf2e' : 'rgba(40,40,60,0.75)'; ctx.fill();
       if (!ready) { ctx.beginPath(); ctx.moveTo(bx, by); ctx.arc(bx, by, r, -Math.PI / 2, -Math.PI / 2 + TAU * player.superCharge); ctx.closePath(); ctx.fillStyle = 'rgba(255,207,46,0.55)'; ctx.fill(); }
       ctx.beginPath(); ctx.arc(bx, by, r, 0, TAU); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
       if (ready) { ctx.beginPath(); ctx.arc(bx, by, r + 6 + Math.sin(T * 6) * 3, 0, TAU); ctx.strokeStyle = 'rgba(255,230,120,0.8)'; ctx.lineWidth = 3; ctx.stroke(); }
-      txt(ctx, touchMode ? '大招' : 'E', bx, by, touchMode ? 15 : 18, '#ffffff');
+      txt(ctx, touchMode ? '大招' : 'E', bx, by, Math.round((touchMode ? 15 : 18) * U), '#ffffff');
     }
     if (!touchMode && gameT < 10) txt(ctx, 'WASD 移動 · 左鍵按住瞄準放開射擊 · 右鍵 / E 大招 · 空白鍵 自動射擊', W / 2, H - 28, 15, '#ffffff');
   }
   if (gameT < 0.8) {
     const n = Math.ceil(-gameT), s = n > 0 ? String(n) : '開打！', k = gameT < 0 ? 1 + (Math.ceil(-gameT) + gameT) * 0.4 : 1;
-    txt(ctx, s, W / 2, H / 2 - 30, Math.round(84 * k), n > 0 ? '#ffffff' : '#ffcf2e', 'center', 10);
+    txt(ctx, s, W / 2, H / 2 - 30, Math.round(84 * k * U), n > 0 ? '#ffffff' : '#ffcf2e', 'center', 10);
   }
-  if (state === 'dead') txt(ctx, '你被擊倒了', W / 2, H / 2 - 30, 52, '#ff6a5e', 'center', 8);
-  if (state === 'won') txt(ctx, '冠軍！', W / 2, H / 2 - 30, 72, '#ffcf2e', 'center', 10);
+  if (state === 'dead') txt(ctx, '你被擊倒了', W / 2, H / 2 - 30, Math.round(52 * U), '#ff6a5e', 'center', 8);
+  if (state === 'won') txt(ctx, '冠軍！', W / 2, H / 2 - 30, Math.round(72 * U), '#ffcf2e', 'center', 10);
 }
 
 // ---------- 主迴圈 ----------
@@ -1087,6 +1095,10 @@ document.getElementById('play').addEventListener('click', () => { snd('tick'); s
 document.getElementById('again').addEventListener('click', startGame);
 document.getElementById('home').addEventListener('click', toLobby);
 document.getElementById('quit').addEventListener('click', () => { if (state === 'play' && player.alive) { playerRank = ents.filter(e => e.alive).length; showResult(); } else toLobby(); });
+const zoomBtn = document.getElementById('zoom');
+const syncZoom = () => { zoomBtn.textContent = '視野 ' + ZOOMS[zoomIdx].label; };
+zoomBtn.addEventListener('click', () => { zoomIdx = (zoomIdx + 1) % ZOOMS.length; store.set('zoom', zoomIdx); resize(); syncZoom(); });
+syncZoom();
 const syncMute = () => { el.mute.textContent = muted ? '音效 關' : '音效 開'; };
 el.mute.addEventListener('click', () => { muted = !muted; store.set('muted', muted); syncMute(); });
 syncMute();
