@@ -1,4 +1,4 @@
-/* Hive 方塊鏈 translations.
+/* Hive Block Producer translations.
    Keys missing from a language fall back to English. {placeholders} are filled at runtime.
    Hive terms (HIVE, HBD, RC, HP, HF, custom_json) stay untranslated on purpose. */
 window.HT_LANGS = [
@@ -15,7 +15,8 @@ window.HT_LANGS = [
 window.HT_I18N = {
   /* ------------------------------------------------------------------ English */
   en: {
-    brandSub: 'BLOCK CHAIN', hold: 'Hold', wallet: 'Wallet', hbdSavings: 'HBD savings', lines: 'Lines', combo: 'Curation combo',
+    beta: 'Test build. Thanks for playing and sharing feedback.', feedback: 'Send feedback (GitHub)',
+    hold: 'Hold', wallet: 'Wallet', hbdSavings: 'HBD savings', lines: 'Lines', combo: 'Curation combo',
     controls: 'Controls', kMove: 'Move', kRotate: 'Rotate', kDrop: 'Soft / hard drop', space: 'Space', summonBee: 'Summon bee',
     kPauseMute: 'Pause / mute', kLang: 'Language', protocol: 'Protocol', block: 'Block', next: 'Next transactions',
     rc: 'Resource Credits', feed: 'Chain activity', bee: 'Bee', pause: 'Pause', resume: 'Resume',
@@ -76,7 +77,8 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ Español */
   es: {
-    brandSub: 'CADENA DE BLOQUES', hold: 'Guardar', wallet: 'Billetera', hbdSavings: 'Ahorros HBD', lines: 'Líneas', combo: 'Combo de curación',
+    beta: 'Versión de prueba. Gracias por jugar y darnos tu opinión.', feedback: 'Enviar comentarios (GitHub)',
+    hold: 'Guardar', wallet: 'Billetera', hbdSavings: 'Ahorros HBD', lines: 'Líneas', combo: 'Combo de curación',
     controls: 'Controles', kMove: 'Mover', kRotate: 'Girar', kDrop: 'Caída suave / rápida', space: 'Espacio', summonBee: 'Invocar abeja',
     kPauseMute: 'Pausa / silencio', kLang: 'Idioma', protocol: 'Protocolo', block: 'Bloque', next: 'Próximas transacciones',
     rc: 'Créditos de recursos', feed: 'Actividad en cadena', bee: 'Abeja', pause: 'Pausa', resume: 'Seguir',
@@ -137,7 +139,8 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ Français */
   fr: {
-    brandSub: 'CHAÎNE DE BLOCS', hold: 'Réserve', wallet: 'Portefeuille', hbdSavings: 'Épargne HBD', lines: 'Lignes', combo: 'Combo curation',
+    beta: 'Version de test. Merci de jouer et de donner ton avis.', feedback: 'Donner ton avis (GitHub)',
+    hold: 'Réserve', wallet: 'Portefeuille', hbdSavings: 'Épargne HBD', lines: 'Lignes', combo: 'Combo curation',
     controls: 'Commandes', kMove: 'Déplacer', kRotate: 'Tourner', kDrop: 'Chute douce / rapide', space: 'Espace', summonBee: 'Appeler une abeille',
     kPauseMute: 'Pause / muet', kLang: 'Langue', protocol: 'Protocole', block: 'Bloc', next: 'Transactions suivantes',
     rc: 'Crédits de ressources', feed: 'Activité de la chaîne', bee: 'Abeille', pause: 'Pause', resume: 'Reprendre',
@@ -198,7 +201,8 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ 繁體中文 */
   'zh-Hant': {
-    brandSub: '方塊鏈', hold: '保留', wallet: '錢包', hbdSavings: 'HBD 儲蓄', lines: '清除列數', combo: '策展連擊',
+    beta: '測試版，歡迎試玩並提供意見。', feedback: '回報意見（GitHub）',
+    hold: '保留', wallet: '錢包', hbdSavings: 'HBD 儲蓄', lines: '清除列數', combo: '策展連擊',
     controls: '操作', kMove: '移動', kRotate: '旋轉', kDrop: '軟降 / 硬降', space: '空白', summonBee: '召喚工蜂',
     kPauseMute: '暫停 / 靜音', kLang: '語言', protocol: '協議版本', block: '區塊', next: '下一批交易',
     rc: '資源點數 RC', feed: '鏈上動態', bee: '工蜂', pause: '暫停', resume: '繼續',
@@ -259,7 +263,8 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ 简体中文 */
   'zh-Hans': {
-    brandSub: '方块链', hold: '暂存', wallet: '钱包', hbdSavings: 'HBD 储蓄', lines: '消除行数', combo: '策展连击',
+    beta: '测试版，欢迎试玩并提出意见。', feedback: '反馈意见（GitHub）',
+    hold: '暂存', wallet: '钱包', hbdSavings: 'HBD 储蓄', lines: '消除行数', combo: '策展连击',
     controls: '操作', kMove: '移动', kRotate: '旋转', kDrop: '软降 / 硬降', space: '空格', summonBee: '召唤工蜂',
     kPauseMute: '暂停 / 静音', kLang: '语言', protocol: '协议版本', block: '区块', next: '下一批交易',
     rc: '资源点数 RC', feed: '链上动态', bee: '工蜂', pause: '暂停', resume: '继续',
@@ -320,7 +325,8 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ 日本語 */
   ja: {
-    brandSub: 'ブロックチェーン', hold: 'ホールド', wallet: 'ウォレット', hbdSavings: 'HBD 貯蓄', lines: 'ライン', combo: 'キュレーション連鎖',
+    beta: 'テスト版です。遊んで感想を聞かせてください。', feedback: 'フィードバックを送る（GitHub）',
+    hold: 'ホールド', wallet: 'ウォレット', hbdSavings: 'HBD 貯蓄', lines: 'ライン', combo: 'キュレーション連鎖',
     controls: '操作', kMove: '移動', kRotate: '回転', kDrop: 'ソフト / ハードドロップ', space: 'スペース', summonBee: '働きバチを呼ぶ',
     kPauseMute: '一時停止 / ミュート', kLang: '言語', protocol: 'プロトコル', block: 'ブロック', next: '次のトランザクション',
     rc: 'リソースクレジット', feed: 'チェーンの動き', bee: 'ハチ', pause: '一時停止', resume: '再開',
@@ -381,7 +387,8 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ 한국어 */
   ko: {
-    brandSub: '블록체인', hold: '홀드', wallet: '지갑', hbdSavings: 'HBD 저축', lines: '줄', combo: '큐레이션 콤보',
+    beta: '테스트 버전이에요. 플레이하고 의견을 들려주세요.', feedback: '의견 보내기 (GitHub)',
+    hold: '홀드', wallet: '지갑', hbdSavings: 'HBD 저축', lines: '줄', combo: '큐레이션 콤보',
     controls: '조작', kMove: '이동', kRotate: '회전', kDrop: '소프트 / 하드 드롭', space: '스페이스', summonBee: '일벌 부르기',
     kPauseMute: '일시정지 / 음소거', kLang: '언어', protocol: '프로토콜', block: '블록', next: '다음 트랜잭션',
     rc: '리소스 크레딧', feed: '체인 활동', bee: '일벌', pause: '일시정지', resume: '계속',
@@ -442,7 +449,8 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ हिन्दी */
   hi: {
-    brandSub: 'ब्लॉक चेन', hold: 'होल्ड', wallet: 'वॉलेट', hbdSavings: 'HBD बचत', lines: 'लाइनें', combo: 'क्यूरेशन कॉम्बो',
+    beta: 'यह टेस्ट संस्करण है। खेलकर अपनी राय ज़रूर बताइए।', feedback: 'राय भेजें (GitHub)',
+    hold: 'होल्ड', wallet: 'वॉलेट', hbdSavings: 'HBD बचत', lines: 'लाइनें', combo: 'क्यूरेशन कॉम्बो',
     controls: 'नियंत्रण', kMove: 'हिलाएँ', kRotate: 'घुमाएँ', kDrop: 'सॉफ़्ट / हार्ड ड्रॉप', space: 'स्पेस', summonBee: 'मधुमक्खी बुलाएँ',
     kPauseMute: 'रोकें / म्यूट', kLang: 'भाषा', protocol: 'प्रोटोकॉल', block: 'ब्लॉक', next: 'अगले ट्रांज़ैक्शन',
     rc: 'रिसोर्स क्रेडिट', feed: 'चेन गतिविधि', bee: 'मधुमक्खी', pause: 'रोकें', resume: 'जारी रखें',

@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Hive 方塊鏈</title>
+<title>Hive Block Producer</title>
+<meta name="description" content="A Hive-themed falling-block puzzle game: stack transactions, survive hardforks, dodge downvotes and earn HIVE.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#170a10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 115'%3E%3Cpath d='M50 0l50 29v57l-50 29L0 86V29z' fill='%23e31337'/%3E%3Cpath d='M30 30h16l24 27-24 28H30l24-28z' fill='%23170a10'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
@@ -352,7 +356,7 @@ kbd {
   box-shadow: 0 0 0 5px var(--bg-deep), 0 0 0 6px var(--line), 0 24px 70px rgba(227, 19, 55, 0.22); transform: rotate(-2deg); }
 .hero-copy { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .hero-copy h1 { margin: 0; font: 800 clamp(48px, 8vw, 84px)/0.92 var(--f-display); letter-spacing: 0.04em; text-wrap: balance; }
-.hero-copy h1 em { display: block; font-style: normal; font-family: var(--f-body); font-weight: 700; font-size: clamp(18px, 2.6vw, 28px); letter-spacing: 0.18em; color: var(--hive); margin-top: 10px; }
+.hero-copy h1 em { display: block; font-style: normal; font-family: var(--f-display); font-weight: 800; font-size: clamp(18px, 2.6vw, 28px); letter-spacing: 0.18em; color: var(--hive); margin-top: 10px; }
 .hero-copy .lead { margin: 0; font-size: 15px; max-width: 52ch; }
 .start-card { display: grid; gap: 10px; max-width: 460px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
 .start-card label { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 0.04em; }
@@ -365,6 +369,8 @@ kbd {
 .hive-login { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; }
 .hive-login[disabled] { opacity: 0.55; cursor: not-allowed; }
 .hive-login small { font-size: 10.5px; border: 1px solid var(--line); border-radius: 99px; padding: 2px 8px; color: var(--muted); font-weight: 600; }
+.home-foot { display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+.home-foot a { color: var(--honey); }
 .note { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
 .home-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; }
 .home-grid .col { display: grid; gap: 16px; min-width: 0; }
@@ -437,13 +443,13 @@ kbd {
 <body>
 <section class="home" id="home">
   <header class="home-top">
-    <div class="brand"><span class="hexmark" aria-hidden="true"></span><div><b>HIVE</b><small data-i18n="brandSub">方塊鏈</small></div></div>
+    <div class="brand"><span class="hexmark" aria-hidden="true"></span><div><b>HIVE</b><small>BLOCK PRODUCER</small></div></div>
     <button class="lang-btn" id="langBtnHome" type="button"></button>
   </header>
   <div class="hero">
     <div class="hero-art"><canvas id="heroCv" aria-hidden="true"></canvas></div>
     <div class="hero-copy">
-      <h1>HIVE<em data-i18n="brandSub">方塊鏈</em></h1>
+      <h1>HIVE<em>BLOCK PRODUCER</em></h1>
       <p class="lead" data-i18n="lead"></p>
       <form class="start-card" id="startForm" autocomplete="off">
         <label for="playerName" data-i18n="playerName">玩家名稱</label>
@@ -461,11 +467,12 @@ kbd {
       <section class="box"><h2 data-i18n="records">紀錄</h2><div class="records-wrap" id="records"></div></section>
     </div>
   </div>
+  <footer class="home-foot"><span data-i18n="beta"></span> <a href="https://github.com/d-bot-2026/Claude/issues/new" target="_blank" rel="noopener" data-i18n="feedback"></a></footer>
 </section>
 
 <div class="app" id="app" hidden>
   <aside class="panel left">
-    <div class="brand m-hide"><span class="hexmark" aria-hidden="true"></span><div><b>HIVE</b><small data-i18n="brandSub">方塊鏈</small></div></div>
+    <div class="brand m-hide"><span class="hexmark" aria-hidden="true"></span><div><b>HIVE</b><small>BLOCK PRODUCER</small></div></div>
     <section class="box">
       <h3><span data-i18n="hold">保留</span> <span class="cost">20 RC</span></h3>
       <canvas id="hold" data-i18n-aria="holdAria" aria-label="保留的方塊"></canvas>
@@ -1163,6 +1170,7 @@ function handleHeld(dt) {
 
 /* ---------- game flow ---------- */
 let sheetFn = null;
+// storage keys keep the original prefix so existing records survive the rename
 const NAME_KEY = 'hive-tetris-name', RUNS_KEY = 'hive-tetris-runs';
 let playerName = (store.get(NAME_KEY) || '').slice(0, 16);
 function cleanName(v) { return String(v || '').replace(/[\u0000-\u001f\u007f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 16); }
