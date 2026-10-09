@@ -3,9 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Hive Block Producer</title>
-<meta name="description" content="A Hive-themed falling-block puzzle game: stack transactions, survive hardforks and dodge downvotes. All in-game HIVE, HBD and RC are play points with no real value.">
-<meta name="robots" content="noindex, nofollow">
+<title>Hive Block Producer | Free Browser Block Puzzle Game</title>
+<meta name="description" content="Hive Block Producer is a free browser block puzzle game with a Hive blockchain theme. Stack transactions, survive hardforks and dodge downvotes. No sign-up, works on phones.">
+<meta name="keywords" content="Hive, Hive blockchain, blockchain game, free browser game, block puzzle, falling block game, HTML5 game">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://d-bot-2026.github.io/Claude/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hive Block Producer">
+<meta property="og:url" content="https://d-bot-2026.github.io/Claude/">
+<meta property="og:title" content="Hive Block Producer | Free Browser Block Puzzle Game">
+<meta property="og:description" content="A free block puzzle game with a Hive blockchain theme. Stack transactions, survive hardforks, dodge downvotes. Plays in your browser, 8 languages.">
+<meta property="og:image" content="https://d-bot-2026.github.io/Claude/og-image.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Hive Block Producer game screen: a stack of hexagon-marked blocks, wallet and Hive chain status panels">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Hive Block Producer | Free Browser Block Puzzle Game">
+<meta name="twitter:description" content="A free block puzzle game with a Hive blockchain theme. Stack transactions, survive hardforks, dodge downvotes. Plays in your browser.">
+<meta name="twitter:image" content="https://d-bot-2026.github.io/Claude/og-image.jpg">
+<meta name="twitter:image:alt" content="Hive Block Producer game screen: a stack of hexagon-marked blocks, wallet and Hive chain status panels">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Hive Block Producer","url":"https://d-bot-2026.github.io/Claude/","image":"https://d-bot-2026.github.io/Claude/og-image.jpg","description":"A free browser block puzzle game with a Hive blockchain theme. Unofficial fan project; in-game HIVE, HBD and RC are play points with no real value.","genre":["Puzzle","Block puzzle"],"gamePlatform":"Web browser","applicationCategory":"Game","operatingSystem":"Any","isAccessibleForFree":true,"inLanguage":["en","es","fr","zh-Hant","zh-Hans","ja","ko","hi"],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <meta name="theme-color" content="#170a10">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 115'%3E%3Cpath d='M50 0l50 29v57l-50 29L0 86V29z' fill='%23e31337'/%3E%3Cpath d='M30 30h16l24 27-24 28H30l24-28z' fill='%23170a10'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -180,7 +199,7 @@ kbd {
 .chain .hf label { font-size: 11px; color: var(--muted); }
 .chain .hf b { font: 800 26px/1 var(--f-display); color: var(--honey); letter-spacing: 0.04em; }
 .era { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: var(--bg-deep); border: 1px dashed var(--line); }
-.era b { display: block; font-size: 13px; overflow-wrap: anywhere; }
+.era b { display: block; font-size: 13px; overflow-wrap: break-word; }
 .era span { display: block; font-size: 11.5px; color: var(--muted); line-height: 1.45; }
 .era.alert b { color: var(--bad); }
 .blk { margin-top: 10px; font: 500 11px/1.3 var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -369,6 +388,17 @@ kbd {
 .hive-login { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; }
 .hive-login[disabled] { opacity: 0.55; cursor: not-allowed; }
 .hive-login small { font-size: 10.5px; border: 1px solid var(--line); border-radius: 99px; padding: 2px 8px; color: var(--muted); font-weight: 600; }
+.coach {
+  position: absolute; left: 50%; top: 40%; transform: translateX(-50%);
+  width: max-content; max-width: 90%;
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(16, 6, 11, 0.94); border: 1px solid var(--honey); border-radius: 10px;
+  padding: 8px 12px; color: var(--fg); font-size: 13px; line-height: 1.4; cursor: pointer;
+}
+.coach-step { flex: none; font: 700 11px var(--f-mono); color: var(--honey); }
+@keyframes hintPulse { 50% { box-shadow: 0 0 0 4px rgba(245, 165, 36, 0.6), 0 3px 0 var(--bg-deep); } }
+.t-move.hint .t-key, .t-rot.hint .t-round { animation: hintPulse 1s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .t-move.hint .t-key, .t-rot.hint .t-round { animation: none; box-shadow: 0 0 0 3px rgba(245, 165, 36, 0.6); } }
 .home-foot { display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
 .home-foot a { color: var(--honey); }
 .disclaimer { margin: 0; max-width: 60ch; font-size: 12px; line-height: 1.5; color: var(--muted); background: var(--bg-deep); border: 1px dashed var(--line); border-radius: 8px; padding: 8px 12px; }
@@ -428,6 +458,7 @@ kbd {
   .era { padding: 6px; margin-top: 6px; }
   .era b { font-size: 11.5px; }
   .era span { display: none; }
+  .era:not(.alert) { display: none; }
   .skill { padding: 6px; font-size: 11px; flex-direction: column; gap: 0; margin-top: 8px; }
   .rules { grid-template-columns: 1fr; }
   .sheet { padding: 20px 18px; }
@@ -452,7 +483,7 @@ kbd {
     <div class="hero-copy">
       <h1>HIVE<em>BLOCK PRODUCER</em></h1>
       <p class="lead" data-i18n="lead"></p>
-      <p class="disclaimer" data-i18n="disclaimer"></p>
+      <p class="disclaimer"><span data-i18n="disclaimer"></span> <span data-i18n="unofficial"></span></p>
       <form class="start-card" id="startForm" autocomplete="off">
         <label for="playerName" data-i18n="playerName">玩家名稱</label>
         <input id="playerName" name="playerName" maxlength="16" data-i18n-ph="namePh" spellcheck="false">
@@ -507,6 +538,7 @@ kbd {
       <canvas id="board" data-i18n-aria="boardAria" aria-label="遊戲盤面"></canvas>
       <div class="banner" id="banner" role="status" aria-live="polite"></div>
       <div class="freeze" id="freeze" hidden></div>
+      <div class="coach" id="coach" role="status" aria-live="polite" hidden><span class="coach-step" id="coachStep"></span><span id="coachText"></span></div>
     </div>
   </main>
 
@@ -705,11 +737,14 @@ function freshState() {
     rc: RC_MAX, t: 0, blockAcc: 0, height: 101000000 + rint(0, 899999), blocks: 0,
     nextEvent: 12000, frozenUntil: 0, dropAcc: 0, lockT: 0, lockResets: 0, clearing: null,
     fx: [], parts: [], feed: [], feedDirty: true, pieceCount: 0, shake: 0, beesSummoned: 0,
+    warm: true, placed: 0,
   };
 }
 const lvl = () => (S.hf - 24) + (S.era.id === 'fast' ? 2 : 0);
 const mult = () => S.hf - 23;
-const gravityMs = () => Math.max(55, Math.round(850 * Math.pow(0.8, lvl())));
+// new players get a slow warm-up until their first clear (or WARM_PIECES pieces), so a first row is reachable on a phone
+const WARM_MS = 1300, WARM_LOCK_MS = 800, WARM_PIECES = 14, CLEARED_KEY = 'hive-tetris-cleared';
+const gravityMs = () => { const g = Math.max(55, Math.round(850 * Math.pow(0.8, lvl()))); return S.warm ? Math.max(g, WARM_MS) : g; };
 
 function makeQ(type) {
   const m = clone(PIECES[type].m);
@@ -729,6 +764,11 @@ function genPiece() {
   if (S.hf >= 25 && Math.random() < 0.035) return makeQ('F');
   if (!S.bag.length) S.bag = shuffle(['I', 'O', 'T', 'S', 'Z', 'J', 'L']);
   return makeQ(S.bag.pop());
+}
+function firstBag() {
+  // the first two pieces of a game are never S or Z, the hardest shapes to place on an empty board
+  const b = shuffle(['I', 'O', 'T', 'J', 'L']);
+  return [...shuffle(['S', 'Z']), ...b];
 }
 function fillQueue() { while (S.queue.length < 4) S.queue.push(genPiece()); }
 function makeActive(q) {
@@ -890,6 +930,8 @@ function lockPiece() {
     sfx('lock');
   }
   S.canHold = true;
+  S.placed++;
+  if (S.warm && S.placed >= WARM_PIECES) S.warm = false;
   checkLines(true);
 }
 
@@ -911,6 +953,9 @@ function checkLines(fromLock) {
   addHive(gain);
   if (hbds) S.hbd += hbds * 500;
   S.lines += n;
+  S.warm = false;
+  store.set(CLEARED_KEY, '1');
+  endCoach();
   const midY = rows[Math.floor(rows.length / 2)];
   floatText('+' + fmt3(gain) + ' HIVE', COLS / 2, midY, '#fff');
   if (coins) floatText(t('fTokens', { n: coins }), COLS / 2, midY + 1.1, '#ff8da0');
@@ -970,7 +1015,7 @@ const EVENTS = [
       banner(t('upT'), t('upD', { g: fmt3(200 * m) }), 'good');
       sfx('good');
   } },
-  { id: 'downvote', w: 2, when: () => S.t > 25000, run() {
+  { id: 'downvote', w: 2, when: () => !S.warm && S.t > 25000, run() {
       const who = pick(SPAMMERS);
       const over = S.board[0].some(Boolean);
       const hole = rint(0, COLS - 1);
@@ -1023,7 +1068,7 @@ const EVENTS = [
       banner(t('rcFullT'), t('rcFullD', { who }), 'good');
       sfx('good');
   } },
-  { id: 'spam', w: 1, when: () => S.t > 25000, run() {
+  { id: 'spam', w: 1, when: () => !S.warm && S.t > 25000, run() {
       S.rc = Math.max(0, S.rc - 40);
       log('spamLog', { who: pick(SPAMMERS) }, 'bad');
       banner(t('spamT'), 'RC -40', 'bad');
@@ -1061,11 +1106,12 @@ function inputDown(a) {
       if (S.era.id === 'mirror') dir = -dir;
       held.h = { dir, t: -DAS, key: a };
       move(dir);
+      coachAct(1);
       break;
     }
     case 'down': held.down = true; break;
-    case 'rotate': rotate(1); break;
-    case 'rotateL': rotate(-1); break;
+    case 'rotate': rotate(1); coachAct(2); break;
+    case 'rotateL': rotate(-1); coachAct(2); break;
     case 'drop': hardDrop(); break;
     case 'hold': doHold(); break;
     case 'bee': summonBee(); break;
@@ -1100,7 +1146,7 @@ document.querySelectorAll('#touch button').forEach(btn => {
   btn.addEventListener('pointerup', up); btn.addEventListener('pointercancel', up); btn.addEventListener('pointerleave', up);
   btn.addEventListener('contextmenu', e => e.preventDefault());
 });
-boardCv.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' && S.state === 'play') rotate(1); });
+boardCv.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' && S.state === 'play') { rotate(1); coachAct(2); } });
 el.beeBtn.addEventListener('click', () => summonBee());
 el.pauseBtn.addEventListener('click', () => togglePause());
 el.muteBtn.addEventListener('click', () => toggleMute());
@@ -1125,6 +1171,7 @@ function applyStatic() {
   document.querySelectorAll('[data-i18n-ph]').forEach(n => n.setAttribute('placeholder', t(n.dataset.i18nPh)));
   bodyFont = getComputedStyle(document.documentElement).getPropertyValue('--f-body').trim() || 'sans-serif';
   updateButtons();
+  if (coach) renderCoach();
   if (S) { S.feedDirty = true; setText($('#pName'), displayName()); }
   renderHome();
 }
@@ -1192,8 +1239,10 @@ function startGame() {
   S = freshState();
   S.state = 'play';
   held.h = null; held.down = false;
+  S.bag = firstBag();
   fillQueue();
   log('genesisLog', {}, 'info');
+  startCoach();
   el.overlay.hidden = true; sheetFn = null;
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   $('#home').hidden = true; $('#app').hidden = false;
@@ -1203,6 +1252,7 @@ function startGame() {
   sfx('fork');
 }
 function showHome() {
+  endCoach();
   S = freshState();
   S.board = demoBoard();
   el.overlay.hidden = true; sheetFn = null;
@@ -1231,7 +1281,8 @@ function gameOver() {
   if (S.state === 'over') return;
   S.state = 'over'; S.cur = null;
   sfx('over');
-  track('game-over', `Game over: ${S.lines} lines, HF${S.hfMax}`);
+  endCoach();
+  track('game-over', `Game over: ${S.lines} lines, ${S.placed} pieces, ${Math.round(S.t / 1000)}s, HF${S.hfMax}`);
   const total = S.hive + S.hbd;
   const best = bestTotal();
   const record = total > best;
@@ -1357,6 +1408,7 @@ function update(dt) {
   }
   if (!S.cur) { spawn(); if (S.state !== 'play') return; }
   handleHeld(dt);
+  updateCoach();
   if (!S.cur) return;
   const frozen = S.t < S.frozenUntil;
   if (!frozen || held.down) {
@@ -1371,7 +1423,7 @@ function update(dt) {
   }
   if (collides(S.cur, 0, 1)) {
     S.lockT += dt;
-    if (S.lockT >= LOCK_MS) lockPiece();
+    if (S.lockT >= (S.warm ? WARM_LOCK_MS : LOCK_MS)) lockPiece();
   } else S.lockT = 0;
 }
 function updateFx(dt) {
@@ -1597,6 +1649,37 @@ function paintIconsIn(root) {
     else if (k === 'combo') { drawCell(c, 0, 13, 13, 'S', null); drawCell(c, 13, 13, 13, 'T', null); drawCell(c, 13, 0, 13, 'L', null); }
   });
 }
+
+/* ---------- first-game coach: three hints within about 10 seconds ---------- */
+let coach = null;
+const touchUI = () => getComputedStyle($('#touch')).display !== 'none';
+function startCoach() {
+  if (store.get(CLEARED_KEY) === '1') { coach = null; renderCoach(); return; }
+  coach = { act: 0, step: -1, goalAt: 0 };
+}
+function coachAct(n) { if (coach) coach.act = Math.max(coach.act, n); }
+function endCoach() { coach = null; renderCoach(); }
+function updateCoach() {
+  if (!coach || S.state !== 'play') return;
+  const byTime = S.t < 3500 ? 0 : S.t < 7000 ? 1 : 2;
+  const step = Math.max(byTime, coach.act);
+  if (step >= 2 && !coach.goalAt) coach.goalAt = S.t;
+  if (coach.goalAt && S.t >= Math.max(10500, coach.goalAt + 3500)) { endCoach(); return; }
+  if (step !== coach.step) { coach.step = step; renderCoach(); }
+}
+function renderCoach() {
+  const box = $('#coach');
+  const on = !!coach && coach.step >= 0;
+  box.hidden = !on;
+  const tch = touchUI();
+  $('.t-move').classList.toggle('hint', on && tch && coach.step === 0);
+  $('.t-rot').classList.toggle('hint', on && tch && coach.step === 1);
+  if (!on) return;
+  const key = coach.step === 0 ? (tch ? 'coachMoveTouch' : 'coachMoveKeys') : coach.step === 1 ? (tch ? 'coachRotTouch' : 'coachRotKeys') : 'coachGoal';
+  $('#coachStep').textContent = `${coach.step + 1}/3`;
+  $('#coachText').textContent = t(key);
+}
+$('#coach').addEventListener('click', () => endCoach());
 
 /* ---------- analytics (GoatCounter, cookie-free) ----------
    Fill in the GoatCounter site code to switch it on, e.g. 'hive-block-producer' for

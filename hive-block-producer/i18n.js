@@ -15,9 +15,15 @@ window.HT_LANGS = [
 window.HT_I18N = {
   /* ------------------------------------------------------------------ English */
   en: {
+    unofficial: 'Hive Block Producer is an unofficial fan project and is not affiliated with or endorsed by Hive.',
+    coachMoveTouch: 'Tap ◀ ▶ to slide the falling piece',
+    coachMoveKeys: 'Press ← → to slide the falling piece',
+    coachRotTouch: 'Tap the round ↻ button to rotate it',
+    coachRotKeys: 'Press ↑ to rotate it',
+    coachGoal: 'Fill one row with no gaps to clear it. Pieces fall slowly until your first clear.',
     privacy: 'This site counts visits anonymously with GoatCounter. No cookies, no personal data.',
     disclaimer: 'All HIVE, HBD, HP and RC in this game are play points only. They are not real cryptocurrency, have no value and cannot be withdrawn or exchanged.',
-    beta: 'Test build. Thanks for playing and sharing feedback.', feedback: 'Send feedback (GitHub)',
+    beta: 'Thanks for playing! Ideas and bug reports are welcome.', feedback: 'Send feedback (GitHub)',
     hold: 'Hold', wallet: 'Wallet', hbdSavings: 'HBD savings', lines: 'Lines', combo: 'Curation combo',
     controls: 'Controls', kMove: 'Move', kRotate: 'Rotate', kDrop: 'Soft / hard drop', space: 'Space', summonBee: 'Summon bee',
     kPauseMute: 'Pause / mute', kLang: 'Language', protocol: 'Protocol', block: 'Block', next: 'Next transactions',
@@ -79,9 +85,15 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ Español */
   es: {
+    unofficial: 'Hive Block Producer es un proyecto no oficial de fans y no está afiliado ni respaldado por Hive.',
+    coachMoveTouch: 'Toca ◀ ▶ para mover la pieza',
+    coachMoveKeys: 'Pulsa ← → para mover la pieza',
+    coachRotTouch: 'Toca el botón redondo ↻ para girarla',
+    coachRotKeys: 'Pulsa ↑ para girarla',
+    coachGoal: 'Llena una fila sin huecos para limpiarla. Las piezas caen despacio hasta tu primera línea.',
     privacy: 'Este sitio cuenta las visitas de forma anónima con GoatCounter. Sin cookies ni datos personales.',
     disclaimer: 'Todos los HIVE, HBD, HP y RC de este juego son solo puntos de juego. No son criptomonedas reales, no tienen valor y no se pueden retirar ni canjear.',
-    beta: 'Versión de prueba. Gracias por jugar y darnos tu opinión.', feedback: 'Enviar comentarios (GitHub)',
+    beta: '¡Gracias por jugar! Las ideas y los reportes de errores son bienvenidos.', feedback: 'Enviar comentarios (GitHub)',
     hold: 'Guardar', wallet: 'Billetera', hbdSavings: 'Ahorros HBD', lines: 'Líneas', combo: 'Combo de curación',
     controls: 'Controles', kMove: 'Mover', kRotate: 'Girar', kDrop: 'Caída suave / rápida', space: 'Espacio', summonBee: 'Invocar abeja',
     kPauseMute: 'Pausa / silencio', kLang: 'Idioma', protocol: 'Protocolo', block: 'Bloque', next: 'Próximas transacciones',
@@ -143,9 +155,15 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ Français */
   fr: {
+    unofficial: 'Hive Block Producer est un projet de fan non officiel, sans lien avec Hive et non approuvé par Hive.',
+    coachMoveTouch: 'Touche ◀ ▶ pour déplacer la pièce',
+    coachMoveKeys: 'Appuie sur ← → pour déplacer la pièce',
+    coachRotTouch: 'Touche le bouton rond ↻ pour la tourner',
+    coachRotKeys: 'Appuie sur ↑ pour la tourner',
+    coachGoal: 'Remplis une ligne sans trou pour l’effacer. Les pièces tombent lentement jusqu’à ta première ligne.',
     privacy: 'Ce site compte les visites de façon anonyme avec GoatCounter. Pas de cookies, aucune donnée personnelle.',
     disclaimer: 'Les HIVE, HBD, HP et RC de ce jeu sont de simples points de jeu. Ce ne sont pas de vraies cryptomonnaies : ils n’ont aucune valeur et ne peuvent être ni retirés ni échangés.',
-    beta: 'Version de test. Merci de jouer et de donner ton avis.', feedback: 'Donner ton avis (GitHub)',
+    beta: 'Merci de jouer ! Idées et signalements de bugs bienvenus.', feedback: 'Donner ton avis (GitHub)',
     hold: 'Réserve', wallet: 'Portefeuille', hbdSavings: 'Épargne HBD', lines: 'Lignes', combo: 'Combo curation',
     controls: 'Commandes', kMove: 'Déplacer', kRotate: 'Tourner', kDrop: 'Chute douce / rapide', space: 'Espace', summonBee: 'Appeler une abeille',
     kPauseMute: 'Pause / muet', kLang: 'Langue', protocol: 'Protocole', block: 'Bloc', next: 'Transactions suivantes',
@@ -207,9 +225,15 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ 繁體中文 */
   'zh-Hant': {
+    unofficial: 'Hive Block Producer 為非官方作品，與 Hive 官方無關，也未獲其背書。',
+    coachMoveTouch: '點 ◀ ▶ 左右移動方塊',
+    coachMoveKeys: '按 ← → 左右移動方塊',
+    coachRotTouch: '點圓形的 ↻ 鍵旋轉方塊',
+    coachRotKeys: '按 ↑ 旋轉方塊',
+    coachGoal: '把一整列填滿、不留空隙就能消除。清掉第一列之前，方塊會落得比較慢。',
     privacy: '本站使用 GoatCounter 匿名統計拜訪次數，不使用 Cookie，也不收集個人資料。',
     disclaimer: '遊戲中的 HIVE、HBD、HP 與 RC 都只是遊戲點數，不是真實的加密貨幣，沒有任何價值，也無法提領或兌換。',
-    beta: '測試版，歡迎試玩並提供意見。', feedback: '回報意見（GitHub）',
+    beta: '感謝試玩！歡迎提供點子或回報問題。', feedback: '回報意見（GitHub）',
     hold: '保留', wallet: '錢包', hbdSavings: 'HBD 儲蓄', lines: '清除列數', combo: '策展連擊',
     controls: '操作', kMove: '移動', kRotate: '旋轉', kDrop: '軟降 / 硬降', space: '空白', summonBee: '召喚工蜂',
     kPauseMute: '暫停 / 靜音', kLang: '語言', protocol: '協議版本', block: '區塊', next: '下一批交易',
@@ -271,9 +295,15 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ 简体中文 */
   'zh-Hans': {
+    unofficial: 'Hive Block Producer 为非官方作品，与 Hive 官方无关，也未获其认可。',
+    coachMoveTouch: '点 ◀ ▶ 左右移动方块',
+    coachMoveKeys: '按 ← → 左右移动方块',
+    coachRotTouch: '点圆形的 ↻ 键旋转方块',
+    coachRotKeys: '按 ↑ 旋转方块',
+    coachGoal: '把一整行填满、不留空隙就能消除。消除第一行之前，方块会落得慢一些。',
     privacy: '本站使用 GoatCounter 匿名统计访问次数，不使用 Cookie，也不收集个人信息。',
     disclaimer: '游戏中的 HIVE、HBD、HP 和 RC 都只是游戏积分，不是真实的加密货币，没有任何价值，也无法提取或兑换。',
-    beta: '测试版，欢迎试玩并提出意见。', feedback: '反馈意见（GitHub）',
+    beta: '感谢试玩！欢迎提出想法或反馈问题。', feedback: '反馈意见（GitHub）',
     hold: '暂存', wallet: '钱包', hbdSavings: 'HBD 储蓄', lines: '消除行数', combo: '策展连击',
     controls: '操作', kMove: '移动', kRotate: '旋转', kDrop: '软降 / 硬降', space: '空格', summonBee: '召唤工蜂',
     kPauseMute: '暂停 / 静音', kLang: '语言', protocol: '协议版本', block: '区块', next: '下一批交易',
@@ -335,9 +365,15 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ 日本語 */
   ja: {
+    unofficial: 'Hive Block Producer は非公式のファン作品で、Hive 公式とは関係がなく、承認も受けていません。',
+    coachMoveTouch: '◀ ▶ をタップしてピースを左右に動かそう',
+    coachMoveKeys: '← → でピースを左右に動かそう',
+    coachRotTouch: '丸い ↻ ボタンで回転しよう',
+    coachRotKeys: '↑ で回転しよう',
+    coachGoal: 'すき間なく 1 列そろえると消えます。最初の 1 列を消すまでは、ゆっくり落ちます。',
     privacy: 'このサイトは GoatCounter で訪問数を匿名で集計しています。Cookie や個人情報は使いません。',
     disclaimer: 'ゲーム内の HIVE・HBD・HP・RC はすべてゲーム用のポイントです。本物の暗号資産ではなく、価値はなく、出金や交換もできません。',
-    beta: 'テスト版です。遊んで感想を聞かせてください。', feedback: 'フィードバックを送る（GitHub）',
+    beta: '遊んでくれてありがとう！アイデアやバグ報告を歓迎します。', feedback: 'フィードバックを送る（GitHub）',
     hold: 'ホールド', wallet: 'ウォレット', hbdSavings: 'HBD 貯蓄', lines: 'ライン', combo: 'キュレーション連鎖',
     controls: '操作', kMove: '移動', kRotate: '回転', kDrop: 'ソフト / ハードドロップ', space: 'スペース', summonBee: '働きバチを呼ぶ',
     kPauseMute: '一時停止 / ミュート', kLang: '言語', protocol: 'プロトコル', block: 'ブロック', next: '次のトランザクション',
@@ -399,9 +435,15 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ 한국어 */
   ko: {
+    unofficial: 'Hive Block Producer는 비공식 팬 프로젝트이며 Hive 공식과 관련이 없고 승인을 받지 않았어요.',
+    coachMoveTouch: '◀ ▶ 를 눌러 블록을 좌우로 옮기세요',
+    coachMoveKeys: '← → 로 블록을 좌우로 옮기세요',
+    coachRotTouch: '둥근 ↻ 버튼으로 회전해요',
+    coachRotKeys: '↑ 로 회전해요',
+    coachGoal: '빈칸 없이 한 줄을 채우면 사라져요. 첫 줄을 지울 때까지는 천천히 떨어져요.',
     privacy: '이 사이트는 GoatCounter로 방문 수를 익명으로 집계해요. 쿠키나 개인정보는 쓰지 않아요.',
     disclaimer: '게임 속 HIVE, HBD, HP, RC는 모두 게임용 포인트예요. 실제 암호화폐가 아니며 가치가 없고 출금하거나 교환할 수 없어요.',
-    beta: '테스트 버전이에요. 플레이하고 의견을 들려주세요.', feedback: '의견 보내기 (GitHub)',
+    beta: '플레이해 줘서 고마워요! 아이디어와 버그 제보를 환영해요.', feedback: '의견 보내기 (GitHub)',
     hold: '홀드', wallet: '지갑', hbdSavings: 'HBD 저축', lines: '줄', combo: '큐레이션 콤보',
     controls: '조작', kMove: '이동', kRotate: '회전', kDrop: '소프트 / 하드 드롭', space: '스페이스', summonBee: '일벌 부르기',
     kPauseMute: '일시정지 / 음소거', kLang: '언어', protocol: '프로토콜', block: '블록', next: '다음 트랜잭션',
@@ -463,9 +505,15 @@ window.HT_I18N = {
 
   /* ------------------------------------------------------------------ हिन्दी */
   hi: {
+    unofficial: 'Hive Block Producer एक अनौपचारिक फ़ैन प्रोजेक्ट है। इसका Hive से कोई आधिकारिक संबंध नहीं है और न ही Hive ने इसका समर्थन किया है।',
+    coachMoveTouch: 'टुकड़ा खिसकाने के लिए ◀ ▶ दबाएँ',
+    coachMoveKeys: 'टुकड़ा खिसकाने के लिए ← → दबाएँ',
+    coachRotTouch: 'घुमाने के लिए गोल ↻ बटन दबाएँ',
+    coachRotKeys: 'घुमाने के लिए ↑ दबाएँ',
+    coachGoal: 'एक लाइन बिना खाली जगह भरें, वह साफ़ हो जाएगी। पहली लाइन साफ़ होने तक टुकड़े धीरे गिरेंगे।',
     privacy: 'यह साइट GoatCounter से विज़िट गुमनाम रूप से गिनती है। कोई कुकी या निजी जानकारी नहीं ली जाती।',
     disclaimer: 'इस खेल के सभी HIVE, HBD, HP और RC सिर्फ़ खेल के अंक हैं। ये असली क्रिप्टोकरेंसी नहीं हैं, इनका कोई मूल्य नहीं है और इन्हें निकाला या बदला नहीं जा सकता।',
-    beta: 'यह टेस्ट संस्करण है। खेलकर अपनी राय ज़रूर बताइए।', feedback: 'राय भेजें (GitHub)',
+    beta: 'खेलने के लिए धन्यवाद! सुझाव और बग रिपोर्ट का स्वागत है।', feedback: 'राय भेजें (GitHub)',
     hold: 'होल्ड', wallet: 'वॉलेट', hbdSavings: 'HBD बचत', lines: 'लाइनें', combo: 'क्यूरेशन कॉम्बो',
     controls: 'नियंत्रण', kMove: 'हिलाएँ', kRotate: 'घुमाएँ', kDrop: 'सॉफ़्ट / हार्ड ड्रॉप', space: 'स्पेस', summonBee: 'मधुमक्खी बुलाएँ',
     kPauseMute: 'रोकें / म्यूट', kLang: 'भाषा', protocol: 'प्रोटोकॉल', block: 'ब्लॉक', next: 'अगले ट्रांज़ैक्शन',
