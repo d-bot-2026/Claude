@@ -2,10 +2,10 @@
 
 以 Hive 區塊鏈為主題的網頁落塊遊戲，純前端，不需要安裝任何東西。
 
-- 線上試玩：https://d-bot-2026.github.io/Claude/ （GitHub Pages，推送到預設分支後自動部署，設定見 `.github/workflows/pages.yml`）
+- 線上試玩：https://d-bot-2026.github.io/hive-block-producer/ （GitHub Pages，推送到預設分支後自動部署，設定見 `.github/workflows/pages.yml`）
 - 本機開啟：直接用瀏覽器打開 `hive-block-producer/index.html`（同資料夾的 `i18n.js` 是翻譯檔，兩個檔案要放在一起）。
 - 已正式公開，允許搜尋引擎收錄。`hive-block-producer/` 內有 `sitemap.xml`、`robots.txt` 與分享預覽圖 `og-image.jpg`（1200×630）。
-- 搜尋引擎只讀取網域根目錄的 robots.txt（`https://d-bot-2026.github.io/robots.txt`），這個專案網站管不到那裡；沒有根目錄 robots.txt 時預設全部允許收錄。要加快收錄，請到 Google Search Console 新增網址前置字元資源 `https://d-bot-2026.github.io/Claude/` 並提交 sitemap。
+- 搜尋引擎只讀取網域根目錄的 robots.txt（`https://d-bot-2026.github.io/robots.txt`），這個專案網站管不到那裡；沒有根目錄 robots.txt 時預設全部允許收錄。要加快收錄，請到 Google Search Console 新增網址前置字元資源 `https://d-bot-2026.github.io/hive-block-producer/` 並提交 sitemap。
 - Hive Block Producer 為非官方作品，與 Hive 官方無關。
 
 首頁可以輸入暱稱、以訪客身分開始，並查看這台裝置的前 10 名紀錄。Hive 帳號登入與鏈上紀錄規劃中。
